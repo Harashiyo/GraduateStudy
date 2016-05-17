@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     }
 
     //輪郭抽出
-    public void getContourExtraction(Mat inputFrame){
+    private void getContourExtraction(Mat inputFrame){
         // Cannyフィルタをかける
         Imgproc.Canny(inputFrame, mOutputFrame, 80, 100);
         // ビット反転
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     }
 
     //2値化
-    public void getBinary(Mat inputFrame){
+    private void getBinary(Mat inputFrame){
         //固定閾値処理
         Imgproc.threshold(inputFrame, mOutputFrame, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
         Imgproc.cvtColor(mOutputFrame,mOutputFrame, Imgproc.COLOR_GRAY2BGRA,4);
