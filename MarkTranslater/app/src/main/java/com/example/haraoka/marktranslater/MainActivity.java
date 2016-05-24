@@ -1,6 +1,7 @@
 package com.example.haraoka.marktranslater;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private static final String TAG  = "MT::MainActivity";
     private CameraBridgeViewBase mCameraView;
-    private Button buttonDetect;
+    private Button buttonTranslate;
     private int status;
     private static final Scalar RED  = new Scalar(255, 0, 0, 255);
     private static final Scalar BLUE = new Scalar(0, 0, 255, 255);
@@ -53,22 +54,20 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     protected void onCreate(Bundle savedInstanceState) {
         //アクティビティの最初に呼ばれる
         super.onCreate(savedInstanceState);
+        //ディスプレイを消灯させない
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //レイアウト読み込み
         setContentView(R.layout.activity_main);
         status=0;
         // 検出ボタンのインスタンスを変数にバインド
-        buttonDetect = (Button) findViewById(R.id.button_detect);
+        buttonTranslate = (Button) findViewById(R.id.button_translate);
         //リスナーの設定
-        buttonDetect.setOnClickListener(new View.OnClickListener(){
+        buttonTranslate.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(status%2==0) {
-
-                    mCameraView.disableView();
-                }else{
-                    onResume();
-                }
-                status++;
+                Intent intent = new Intent(getApplication(), TranslateActivity.class);
+                intent.putExtra("markflag",flag);
+                startActivity(intent);
             }
         });
         // カメラビューのインスタンスを変数にバインド
