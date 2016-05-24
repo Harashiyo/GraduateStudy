@@ -1,0 +1,7 @@
+<resources>
+
+    <!-- タイトルバー無し -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    </style>
+
+</resources>
