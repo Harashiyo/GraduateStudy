@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,8 @@ import java.io.InputStream;
 public class TranslateActivity extends AppCompatActivity {
     //意味表示用テキスト
     TextView textTranslation;
+
+    TextView textTitle;
     //マーク表示用イメージ
     ImageView imageMark;
     @Override
@@ -27,6 +30,7 @@ public class TranslateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_translate);
         textTranslation= (TextView) findViewById(R.id.text_translation);
+        textTitle=(TextView) findViewById(R.id.text_title);
         imageMark=(ImageView)findViewById(R.id.image_mark);
 
         //検出されたデータを受け取る
@@ -42,6 +46,7 @@ public class TranslateActivity extends AppCompatActivity {
             }catch (IOException e) {
                 Log.d("Assets","Error");
             }
+            textTitle.setText(getString(R.string.title_jas20));
             textTranslation.setText(getString(R.string.text_jas20));
 
         }
@@ -55,6 +60,7 @@ public class TranslateActivity extends AppCompatActivity {
             }catch (IOException e) {
                 Log.d("Assets","Error");
             }
+            textTitle.setText(getString(R.string.title_almi));
             textTranslation.setText(getString(R.string.text_almi));
         }
     }

@@ -2,6 +2,8 @@
     <string name="app_name">MarkTranslater</string>
     <string name="button_translate">Translate</string>
     <string name="title_activity_translate">TranslateActivity</string>
+    <string name="title_almi">アルミニウム</string>
     <string name="text_almi">アルミ缶のリサイクルを進めるために付けられたマークです。回収されたアルミ缶は、アルミ缶やアルミサッシなど再生地金をつくるために利用されています。</string>
+    <string name="title_jas20">ＪＡＳマーク</string>
     <string name="text_jas20">品位・成分・性能など、品質についての一般JAS規格を満たす食品や林産物につけるマーク。品質によって「特級」「上級」「標準」の等級を示すことができるものもある。</string>
 </resources>

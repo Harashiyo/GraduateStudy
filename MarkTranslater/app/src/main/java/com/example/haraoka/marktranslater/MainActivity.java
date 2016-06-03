@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -65,9 +66,18 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         buttonTranslate.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(getApplication(), TranslateActivity.class);
-                intent.putExtra("markflag",flag);
-                startActivity(intent);
+                int check=0;
+                for(int i=0; i< flag.length;i++){
+                    if(flag[i]==1){
+                        Intent intent = new Intent(getApplication(), TranslateActivity.class);
+                        intent.putExtra("markflag",flag);
+                        startActivity(intent);
+                        check=1;
+                    }
+                }
+                if(check==0) {
+                    Toast.makeText(MainActivity.this, "検出されませんでした", Toast.LENGTH_LONG).show();
+                }
             }
         });
         // カメラビューのインスタンスを変数にバインド
@@ -131,17 +141,21 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public Mat onCameraFrame(Mat inputFrame) {
+        //mRgbaにinputFrameをコピー
         inputFrame.copyTo(mRgba);
+        //mGrayにmRgbaのグレースケールを格納
         Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
 
         if (mAbsoluteFaceSize == 0) {
             int height = mGray.rows();
+            //10進値を最も近い整数値に丸めます。
             if (Math.round(height * mRelativeFaceSize) > 0) {
                 mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
             }
-            //mNativeDetector.setMinFaceSize(mAbsoluteFaceSize);
         }
-
+        /**
+         * detectMultiScale メソッドで画像中の顔部分を MatOfRect オブジェクトに出力する。
+         */
         MatOfRect faces = new MatOfRect();
 
         if (mJavaDetector != null){
@@ -149,50 +163,41 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                     new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
         }
 
+        /**
+         * 検出された場所に矩形を描写
+         */
         Rect[] facesArray = faces.toArray();
         for (int i = 0; i < facesArray.length; i++){
+            //rectangle(画像,矩形の1つの頂点,反対側にある矩形の頂点,矩形の色,矩形の枠線の太さ)
             Core.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), RED, 3);
         }
 
+        /**
+         * detectMultiScale メソッドで画像中の顔部分を MatOfRect オブジェクトに出力する。
+         */
         MatOfRect faces2 = new MatOfRect();
 
         if (mJavaDetector2 != null){
             mJavaDetector2.detectMultiScale(mGray, faces2, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
                     new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
         }
-
+        /**
+         * 検出された場所に矩形を描写
+         */
         Rect[] facesArray2 = faces2.toArray();
         for (int i = 0; i < facesArray2.length; i++){
             Core.rectangle(mRgba, facesArray2[i].tl(), facesArray2[i].br(), BLUE, 3);
         }
 
+        /**
+         * 検出された物体のフラグを立てる
+         */
         if(facesArray.length>0)flag[0]=1;
         else flag[0]=0;
         if(facesArray2.length>0)flag[1]=1;
         else flag[1]=0;
 
-        Log.i(TAG, "testflag" + flag[0]+" "+ flag[1]);
-
-        int l=0;
-        for(int j=0;j<0;j++){
-
-            if (mJavaDetector != null){
-                mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
-                        new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
-            }
-
-            if(j%20==0){
-                l=0;
-            }
-            Point test1 = new Point(l*50,j/20*50);
-            Point test2 = new Point(l*50+50,j/20*50+50);
-            facesArray = faces.toArray();
-            for (int i = 0; i < facesArray.length; i++){
-                // Core.rectangle(mRgba, test1, test2, FACE_RECT_COLOR, 3);
-                //Core.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), FACE_RECT_COLOR, 3);
-            }
-            l++;
-        }
+        Log.i(TAG, "testflag" + flag[0]+" "+ flag[1]+mAbsoluteFaceSize);
         return mRgba;
     }
 
