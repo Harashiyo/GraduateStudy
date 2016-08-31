@@ -4,16 +4,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +34,7 @@ public class TranslateActivity extends AppCompatActivity {
         //JAS検出
         if(flag[0]==1 && flag[1]==0){
             try{
-                InputStream is = getResources().getAssets().open("jas20.jpg");
+                InputStream is = getResources().getAssets().open("jas20.png");
                 Bitmap bitmap = BitmapFactory.decodeStream(is);
                 imageMark.setImageBitmap(bitmap);
             }catch (IOException e) {
@@ -54,14 +48,14 @@ public class TranslateActivity extends AppCompatActivity {
         //アルミ検出
         if(flag[0]==0 && flag[1]==1){
             try{
-                InputStream is = getResources().getAssets().open("alumi.jpg");
+                InputStream is = getResources().getAssets().open("alumi.png");
                 Bitmap bitmap = BitmapFactory.decodeStream(is);
                 imageMark.setImageBitmap(bitmap);
             }catch (IOException e) {
                 Log.d("Assets","Error");
             }
-            textTitle.setText(getString(R.string.title_almi));
-            textTranslation.setText(getString(R.string.text_almi));
+            textTitle.setText(getString(R.string.title_alumi));
+            textTranslation.setText(getString(R.string.text_alumi));
         }
     }
 

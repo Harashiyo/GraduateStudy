@@ -307,8 +307,9 @@ public class JavaCameraView extends CameraBridgeViewBase implements PreviewCallb
         @Override
         public Mat gray() {
             if (mRotated != null) mRotated.release();
-            mRotated = mYuvFrameData.submat(0, mWidth, 0, mHeight);
-            mRotated = mRotated.t();
+            Mat tmpMat = mYuvFrameData.submat(0, mWidth, 0, mHeight);
+            mRotated = tmpMat.t();
+            tmpMat.release();
             Core.flip(mRotated, mRotated, 1);
             return mRotated;
         }
