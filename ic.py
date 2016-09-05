@@ -59,11 +59,11 @@ def normarization(coordinate, size): #正規化
 	return np.dot(coordinate, m)
 
 def getFileName(num): #出力ファイル名
-	return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\tokuho\\" + str(num).zfill(4)+".png"
+	return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\tokuho2\\" + str(num).zfill(4)+".png"
 
 
 
-img = cv2.imread("C:\\Users\\Shohei\\Documents\\sotsuken\\image\\tokuho.png",cv2.IMREAD_GRAYSCALE)
+img = cv2.imread("C:\\Users\\Shohei\\Desktop\\tokuho.png",cv2.IMREAD_GRAYSCALE)
 size = tuple(np.array([img.shape[1], img.shape[0]]))
 
 for i in range(2000):

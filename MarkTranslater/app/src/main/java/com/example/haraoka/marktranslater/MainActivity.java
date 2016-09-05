@@ -44,10 +44,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private static final Scalar BLUE = new Scalar(0, 0, 255, 255);
     private Mat mRgba;
     private Mat mGray;
-    private File mCascadeFile;
-    private File faceCascadeFile;
-    private CascadeClassifier mJavaDetector;
-    private CascadeClassifier mJavaDetector2;
 
     public static final int JAVA_DETECTOR = 0;
 
@@ -55,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private int mAbsoluteFaceSize = 0;
     private int flag[] = new int[2];
     private Cascade[] cascade;
-    private String[] resNames;
+    private Point topLeft;
+    private Point bottomRight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +87,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         mCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
         // リスナーの設定
         mCameraView.setCvCameraViewListener(this);
-        Field[] fields = R.raw.class.getFields();
-        resNames = new String[fields.length];
-        for (int i = 0; i < fields.length; i++) {
-            resNames[i]=fields[i].getName();
-        }
+
+
+
     }
 
     @Override
@@ -139,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
          * Mat(int rows, int cols, int type)
          * rows(行): height, cols(列): width
          */
+        topLeft = new Point(width / 4, height / 2 - width / 4);
+        bottomRight = new Point(width * 3 / 4, height / 2 + width / 4);
         mGray = new Mat(height, width, CvType.CV_8UC3);
         mRgba = new Mat(height, width, CvType.CV_8UC3);
     }
@@ -157,58 +154,66 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         //mGrayにmRgbaのグレースケールを格納
         Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
 
+        Core.rectangle(mRgba, topLeft, bottomRight , BLUE, 3);
+
+/*
         if (mAbsoluteFaceSize == 0) {
             int height = mGray.rows();
             //10進値を最も近い整数値に丸めます。
             if (Math.round(height * mRelativeFaceSize) > 0) {
                 mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
             }
-        }
+        }*/
         /**
          * detectMultiScale メソッドで画像中の顔部分を MatOfRect オブジェクトに出力する。
          */
+        /*
         MatOfRect faces = new MatOfRect();
 
         if (mJavaDetector != null) {
             mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
                     new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
         }
+        */
 
         /**
          * 検出された場所に矩形を描写
          */
+        /*
         Rect[] facesArray = faces.toArray();
         for (int i = 0; i < facesArray.length; i++) {
             //rectangle(画像,矩形の1つの頂点,反対側にある矩形の頂点,矩形の色,矩形の枠線の太さ)
             Core.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), RED, 3);
         }
-
+*/
         /**
          * detectMultiScale メソッドで画像中の顔部分を MatOfRect オブジェクトに出力する。
          */
+        /*
         MatOfRect faces2 = new MatOfRect();
 
         if (mJavaDetector2 != null) {
             mJavaDetector2.detectMultiScale(mGray, faces2, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
                     new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
-        }
+        }*/
         /**
          * 検出された場所に矩形を描写
          */
+        /*
         Rect[] facesArray2 = faces2.toArray();
         for (int i = 0; i < facesArray2.length; i++) {
             Core.rectangle(mRgba, facesArray2[i].tl(), facesArray2[i].br(), BLUE, 3);
         }
-
+*/
         /**
          * 検出された物体のフラグを立てる
-         */
+         *//*
         if (facesArray.length > 0) flag[0] = 1;
         else flag[0] = 0;
         if (facesArray2.length > 0) flag[1] = 1;
         else flag[1] = 0;
 
-        Log.i(TAG, "testflag" + flag[0] + " " + flag[1] + mAbsoluteFaceSize);
+        Log.i(TAG, "testflag" + flag[0] + " " + flag[1] + mAbsoluteFaceSize);*/
         return mRgba;
     }
 
@@ -226,11 +231,31 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                      * 1. res/raw/に、検出したいファイルを置く。
                      * 2. InputStream isとmCascadeFileの引数をファイル名に変える
                      */
+
+                    /**
+                     * Relevant Android bug here: code.google.com/p/android/issues/detail?id=204714 — the $change field will probably become transient in Android Studio 2.1, which would solve most of the issues it may produce right now.
+                     * ここでは関係アンドロイドバグ：code.google.com/p/android/issues/detail?id=204714 - $changeフィールドは、おそらくそれが今生成することができる問題のほとんどを解決することになる、Androidのスタジオ2.1の一過性になります。
+                     * URL:http://stackoverflow.com/questions/36549129/android-java-objmodelclass-getclass-getdeclaredfields-returns-change-as-o
+                     */
+
+
                     // カスケード型分類器読み込み
-                    cascade = new Cascade[resNames.length];
-                    for (int i = 0; i < resNames.length; i++) {
+                    int resNum =  0;
+                    int i = 0;
+                    Field[] fields = R.raw.class.getFields();
+                    for (Field field : fields) {
+                        if(field.getName().equals("$change")) {
+                            continue;
+                        }
+                        resNum++;
+                    }
+                    cascade = new Cascade[resNum];
+                    for (Field field : fields) {
                         try {
-                            String resName = resNames[i];
+                            if(field.getName().equals("$change")) {
+                                continue;
+                            }
+                            String resName = field.getName();
                             int resId = getResources().getIdentifier(resName, "raw", getPackageName());
                             InputStream is = getResources().openRawResource(resId);
                             File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
@@ -256,6 +281,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                                 mJavaDetector = null;
                             } else {
                                 cascade[i] = new Cascade(resName, mJavaDetector, bm, title, text);
+                                i++;
                                 Log.i(TAG, "Loaded cascade classifier from " + cascadeFile.getAbsolutePath());
                             }
                             cascadeDir.delete();
