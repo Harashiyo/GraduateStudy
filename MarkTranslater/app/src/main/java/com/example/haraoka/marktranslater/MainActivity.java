@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -38,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private static final String TAG = "MT::MainActivity";
     private CameraBridgeViewBase mCameraView;
-    private Button buttonTranslate;
     private int status;
     private static final Scalar RED = new Scalar(255, 0, 0, 255);
     private static final Scalar BLUE = new Scalar(0, 0, 255, 255);
@@ -47,12 +49,13 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     public static final int JAVA_DETECTOR = 0;
 
-    private float mRelativeFaceSize = 0.5f;
-    private int mAbsoluteFaceSize = 0;
+    private Thread mThread;
+    private boolean mRepeatFlag = false;
     private int flag[] = new int[2];
-    private Cascade[] cascade;
-    private Point topLeft;
-    private Point bottomRight;
+    private Cascade[] mCascade;
+    private Point mTopLeft;
+    private Point mBottomRight;
+    private Point mScreenSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +66,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         //レイアウト読み込み
         setContentView(R.layout.activity_main);
         status = 0;
-        // 検出ボタンのインスタンスを変数にバインド
-        buttonTranslate = (Button) findViewById(R.id.button_translate);
-        //リスナーの設定
+        // ボタンの設定
+        Button buttonTranslate = (Button) findViewById(R.id.button_translate);
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,11 +85,70 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 }
             }
         });
-        // カメラビューのインスタンスを変数にバインド
-        mCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
-        // リスナーの設定
-        mCameraView.setCvCameraViewListener(this);
+        Button buttonPlus = (Button) findViewById(R.id.button_puls);
+        buttonPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mScreenSize.x > mBottomRight.x){
+                    mTopLeft.x--;
+                    mTopLeft.y--;
+                    mBottomRight.x++;
+                    mBottomRight.y++;
+                }
+            }
+        });
+        buttonPlus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    mRepeatFlag = false;
+                }
+                return false;
+            }
+        });
+        buttonPlus.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mRepeatFlag = true;
+                mThread = new Thread(repeatPlus);
+                mThread.start();
+                return false;
+            }
+        });
+        Button buttonMinus = (Button) findViewById(R.id.button_minus);
+        buttonMinus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mBottomRight.x - mTopLeft.x > 90) {
+                    mTopLeft.x++;
+                    mTopLeft.y++;
+                    mBottomRight.x--;
+                    mBottomRight.y--;
+                }
+            }
+        });
+        buttonPlus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                    mRepeatFlag = false;
+                }
+                return false;
+            }
+        });
+        buttonMinus.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mRepeatFlag = true;
+                mThread = new Thread(repeatMinus);
+                mThread.start();
+                return false;
+            }
+        });
 
+        // カメラビューの設定
+        mCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
+        mCameraView.setCvCameraViewListener(this);
 
 
     }
@@ -134,8 +195,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
          * Mat(int rows, int cols, int type)
          * rows(行): height, cols(列): width
          */
-        topLeft = new Point(width / 4, height / 2 - width / 4);
-        bottomRight = new Point(width * 3 / 4, height / 2 + width / 4);
+        mScreenSize = new Point(width, height);
+        mTopLeft = new Point(width / 4, height / 2 - width / 4);
+        mBottomRight = new Point(width * 3 / 4, height / 2 + width / 4);
         mGray = new Mat(height, width, CvType.CV_8UC3);
         mRgba = new Mat(height, width, CvType.CV_8UC3);
     }
@@ -154,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         //mGrayにmRgbaのグレースケールを格納
         Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
 
-        Core.rectangle(mRgba, topLeft, bottomRight , BLUE, 3);
+        Core.rectangle(mRgba, mTopLeft, mBottomRight, BLUE, 3);
 
 /*
         if (mAbsoluteFaceSize == 0) {
@@ -225,42 +287,40 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i(TAG, "OpenCV loaded successfully");
                     /**
-                     * この辺のファイルをopencv/sdk/etc/haarcascades もしくは、opencv/sdk/etc/lbpcascadesにある
+                     * この辺のファイルをopencv/sdk/etc/haarmCascades もしくは、opencv/sdk/etc/lbpmCascadesにある
                      * xmlファイルと書き換えると、検出する場所が変わるっぽい
                      *
                      * 1. res/raw/に、検出したいファイルを置く。
                      * 2. InputStream isとmCascadeFileの引数をファイル名に変える
-                     */
-
-                    /**
+                     *
+                     *
                      * Relevant Android bug here: code.google.com/p/android/issues/detail?id=204714 — the $change field will probably become transient in Android Studio 2.1, which would solve most of the issues it may produce right now.
                      * ここでは関係アンドロイドバグ：code.google.com/p/android/issues/detail?id=204714 - $changeフィールドは、おそらくそれが今生成することができる問題のほとんどを解決することになる、Androidのスタジオ2.1の一過性になります。
                      * URL:http://stackoverflow.com/questions/36549129/android-java-objmodelclass-getclass-getdeclaredfields-returns-change-as-o
                      */
 
-
                     // カスケード型分類器読み込み
-                    int resNum =  0;
+                    int resNum = 0;
                     int i = 0;
                     Field[] fields = R.raw.class.getFields();
                     for (Field field : fields) {
-                        if(field.getName().equals("$change")) {
+                        if (field.getName().equals("$change")) {
                             continue;
                         }
                         resNum++;
                     }
-                    cascade = new Cascade[resNum];
+                    mCascade = new Cascade[resNum];
                     for (Field field : fields) {
                         try {
-                            if(field.getName().equals("$change")) {
+                            if (field.getName().equals("$change")) {
                                 continue;
                             }
                             String resName = field.getName();
                             int resId = getResources().getIdentifier(resName, "raw", getPackageName());
                             InputStream is = getResources().openRawResource(resId);
-                            File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
-                            File cascadeFile = new File(cascadeDir, resName + ".xml");
-                            FileOutputStream os = new FileOutputStream(cascadeFile);
+                            File mCascadeDir = getDir("mCascade", Context.MODE_PRIVATE);
+                            File mCascadeFile = new File(mCascadeDir, resName + ".xml");
+                            FileOutputStream os = new FileOutputStream(mCascadeFile);
                             byte[] buffer = new byte[4096];
                             int bytesRead;
                             while ((bytesRead = is.read(buffer)) != -1) {
@@ -268,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                             }
                             is.close();
                             os.close();
-                            CascadeClassifier mJavaDetector = new CascadeClassifier(cascadeFile.getAbsolutePath());
+                            CascadeClassifier mJavaDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
                             is = getResources().getAssets().open(resName + ".png");
                             Bitmap bm = BitmapFactory.decodeStream(is);
                             is.close();
@@ -277,14 +337,14 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                             resId = getResources().getIdentifier("text_" + resName, "string", getPackageName());
                             String text = getResources().getString(resId);
                             if (mJavaDetector.empty()) {
-                                Log.e(TAG, "Failed to load cascade classifier");
+                                Log.e(TAG, "Failed to load mCascade classifier");
                                 mJavaDetector = null;
                             } else {
-                                cascade[i] = new Cascade(resName, mJavaDetector, bm, title, text);
+                                mCascade[i] = new Cascade(resName, mJavaDetector, bm, title, text);
                                 i++;
-                                Log.i(TAG, "Loaded cascade classifier from " + cascadeFile.getAbsolutePath());
+                                Log.i(TAG, "Loaded mCascade classifier from " + mCascadeFile.getAbsolutePath());
                             }
-                            cascadeDir.delete();
+                            mCascadeDir.delete();
 
                         } catch (IllegalArgumentException e) {
                             e.printStackTrace();
@@ -292,11 +352,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                             e.printStackTrace();
                         } catch (IOException e) {
                             e.printStackTrace();
-                            Log.e(TAG, "Failed to load cascade. Exception thrown: " + e);
+                            Log.e(TAG, "Failed to load mCascade. Exception thrown: " + e);
                         }
                     }
-
-
                     mCameraView.enableView();
                 }
                 break;
@@ -308,5 +366,58 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     };
 
+    private Runnable repeatPlus = new Runnable(){
+        @Override
+        public void run(){
+            while(mRepeatFlag){
+                try{
+                    Thread.sleep(30);
+                }catch(InterruptedException e){
+                }
+                handler.post(new Runnable(){
+                    @Override
+                    public void run(){
+                        if (mScreenSize.x > mBottomRight.x) {
+                            mTopLeft.x--;
+                            mTopLeft.y--;
+                            mBottomRight.x++;
+                            mBottomRight.y++;
+                        }
+                    }
+                });
+            }
+        }
+    };
 
+    private Runnable repeatMinus = new Runnable(){
+        @Override
+        public void run(){
+            while(mRepeatFlag){
+                try{
+                    Thread.sleep(30);
+                }catch(InterruptedException e){
+                }
+                handler.post(new Runnable(){
+                    @Override
+                    public void run(){
+                        if (mBottomRight.x - mTopLeft.x > 90) {
+                            mTopLeft.x++;
+                            mTopLeft.y++;
+                            mBottomRight.x--;
+                            mBottomRight.y--;
+                        }
+                    }
+                });
+            }
+        }
+    };
+
+    private Handler handler = new Handler(){
+        public void handleMessage(Message msg){
+            if(mThread != null){
+                mThread.stop();
+                mThread=null;
+            }
+        }
+    };
 }

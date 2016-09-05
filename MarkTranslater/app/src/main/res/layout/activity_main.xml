@@ -25,5 +25,24 @@
             android:text="@string/button_translate"
             android:id="@+id/button_translate"
             android:layout_gravity="center_horizontal|bottom" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:id="@+id/button_puls" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:id="@+id/button_minus" />
+        </LinearLayout>
     </FrameLayout>
 </RelativeLayout>
