@@ -2,6 +2,7 @@ package com.example.haraoka.marktranslater;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -41,15 +42,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private static final String TAG = "MT::MainActivity";
     private CameraBridgeViewBase mCameraView;
-    private int status;
     private static final Scalar RED = new Scalar(255, 0, 0, 255);
     private static final Scalar BLUE = new Scalar(0, 0, 255, 255);
     private Mat mRgba;
     private Mat mGray;
-
-    public static final int JAVA_DETECTOR = 0;
-
-    private Thread mThread;
+    private SharedPreferences preferences;
+    private Thread mPointThread;
     private boolean mRepeatFlag = false;
     private int flag[] = new int[2];
     private Cascade[] mCascade;
@@ -65,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //レイアウト読み込み
         setContentView(R.layout.activity_main);
-        status = 0;
+        preferences = getSharedPreferences("SaveData", Context.MODE_PRIVATE);
+
         // ボタンの設定
         Button buttonTranslate = (Button) findViewById(R.id.button_translate);
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
@@ -110,8 +109,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             @Override
             public boolean onLongClick(View v) {
                 mRepeatFlag = true;
-                mThread = new Thread(repeatPlus);
-                mThread.start();
+                mPointThread = new Thread(repeatPlus);
+                mPointThread.start();
                 return false;
             }
         });
@@ -130,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         buttonPlus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     mRepeatFlag = false;
                 }
                 return false;
@@ -140,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             @Override
             public boolean onLongClick(View v) {
                 mRepeatFlag = true;
-                mThread = new Thread(repeatMinus);
-                mThread.start();
+                mPointThread = new Thread(repeatMinus);
+                mPointThread.start();
                 return false;
             }
         });
@@ -176,6 +175,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         if (mCameraView != null) {
             mCameraView.disableView();
         }
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("TOP_LEFT_X", (int) mTopLeft.x);
+        editor.putInt("TOP_LEFT_Y", (int) mTopLeft.y);
+        editor.putInt("BOTTOM_RIGHT_X", (int) mBottomRight.x);
+        editor.putInt("BOTTOM_RIGHT_Y", (int) mBottomRight.y);
+        editor.apply();
         super.onPause();
     }
 
@@ -196,8 +201,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
          * rows(行): height, cols(列): width
          */
         mScreenSize = new Point(width, height);
-        mTopLeft = new Point(width / 4, height / 2 - width / 4);
-        mBottomRight = new Point(width * 3 / 4, height / 2 + width / 4);
+        mTopLeft = new Point( preferences.getInt("TOP_LEFT_X",width / 4), preferences.getInt("TOP_LEFT_Y",height / 2 - width / 4));
+        mBottomRight = new Point(preferences.getInt("BOTTOM_RIGHT_X",width * 3 / 4), preferences.getInt("BOTTOM_RIGHT_Y", height / 2 + width / 4));
         mGray = new Mat(height, width, CvType.CV_8UC3);
         mRgba = new Mat(height, width, CvType.CV_8UC3);
     }
@@ -414,9 +419,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private Handler handler = new Handler(){
         public void handleMessage(Message msg){
-            if(mThread != null){
-                mThread.stop();
-                mThread=null;
+            if(mPointThread != null){
+                mPointThread.stop();
+                mPointThread=null;
             }
         }
     };
