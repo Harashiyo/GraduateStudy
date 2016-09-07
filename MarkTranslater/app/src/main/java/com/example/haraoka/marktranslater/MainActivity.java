@@ -14,12 +14,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -36,7 +38,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener {
 
@@ -46,11 +52,13 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private static final Scalar BLUE = new Scalar(0, 0, 255, 255);
     private Mat mRgba;
     private Mat mGray;
-    private SharedPreferences preferences;
+
     private Thread mPointThread;
     private boolean mRepeatFlag = false;
-    private int flag[] = new int[2];
-    private Cascade[] mCascade;
+    private List<Cascade> mCascades;
+
+
+    private SharedPreferences preferences;
     private Point mTopLeft;
     private Point mBottomRight;
     private Point mScreenSize;
@@ -64,22 +72,35 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         //レイアウト読み込み
         setContentView(R.layout.activity_main);
         preferences = getSharedPreferences("SaveData", Context.MODE_PRIVATE);
-
+        mCascades = new ArrayList<>();
         // ボタンの設定
         Button buttonTranslate = (Button) findViewById(R.id.button_translate);
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int check = 0;
-                for (int i = 0; i < flag.length; i++) {
-                    if (flag[i] == 1) {
-                        Intent intent = new Intent(getApplication(), TranslateActivity.class);
-                        intent.putExtra("markflag", flag);
-                        startActivity(intent);
-                        check = 1;
+                Mat mat = new Mat((int) (mBottomRight.y-mTopLeft.y), (int)(mBottomRight.x-mTopLeft.x), CvType.CV_8UC3);
+                mGray.submat((int)mTopLeft.y,(int)mBottomRight.y,(int)mTopLeft.x,(int)mBottomRight.x).copyTo(mat);
+                for(int i = 0; i < mCascades.size();i++){
+                    mCascades.get(i).detectMarks(mat);
+                    System.out.println(mCascades.get(i).getResName());
+                    System.out.println(mCascades.get(i).getResult());
+                }
+                List<Cascade> detectedMarks = new ArrayList<>();
+                for(int i = 0; i < mCascades.size(); i++){
+                    if(mCascades.get(i).getResult()==true){
+                        detectedMarks.add(mCascades.get(i));
                     }
                 }
-                if (check == 0) {
+
+                if(detectedMarks.size() == 1){
+                    Intent intent = new Intent(getApplication(), TranslateActivity.class);
+                    intent.putExtra("DETECTED_MARK", detectedMarks.get(0));
+                    startActivity(intent);
+                }else if(detectedMarks.size() > 0){
+                    Intent intent = new Intent(getApplication(), SelectActivity.class);
+                    intent.putExtra("DETECTED_MARKS", (Serializable) detectedMarks);
+                    startActivity(intent);
+                }else{
                     Toast.makeText(MainActivity.this, "検出されませんでした", Toast.LENGTH_LONG).show();
                 }
             }
@@ -218,69 +239,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public Mat onCameraFrame(Mat inputFrame) {
         //mRgbaにinputFrameをコピー
         inputFrame.copyTo(mRgba);
-        //mGrayにmRgbaのグレースケールを格納
+        //mGrayにグレースケールを格納
         Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
+        //mRgbaに矩形を描画
+        Core.rectangle(mRgba, mTopLeft, mBottomRight, RED, 3);
 
-        Core.rectangle(mRgba, mTopLeft, mBottomRight, BLUE, 3);
-
-/*
-        if (mAbsoluteFaceSize == 0) {
-            int height = mGray.rows();
-            //10進値を最も近い整数値に丸めます。
-            if (Math.round(height * mRelativeFaceSize) > 0) {
-                mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
-            }
-        }*/
-        /**
-         * detectMultiScale メソッドで画像中の顔部分を MatOfRect オブジェクトに出力する。
-         */
-        /*
-        MatOfRect faces = new MatOfRect();
-
-        if (mJavaDetector != null) {
-            mJavaDetector.detectMultiScale(mGray, faces, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
-                    new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
-        }
-        */
-
-        /**
-         * 検出された場所に矩形を描写
-         */
-        /*
-        Rect[] facesArray = faces.toArray();
-        for (int i = 0; i < facesArray.length; i++) {
-            //rectangle(画像,矩形の1つの頂点,反対側にある矩形の頂点,矩形の色,矩形の枠線の太さ)
-            Core.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(), RED, 3);
-        }
-*/
-        /**
-         * detectMultiScale メソッドで画像中の顔部分を MatOfRect オブジェクトに出力する。
-         */
-        /*
-        MatOfRect faces2 = new MatOfRect();
-
-        if (mJavaDetector2 != null) {
-            mJavaDetector2.detectMultiScale(mGray, faces2, 1.1, 2, 2, // TODO: objdetect.CV_HAAR_SCALE_IMAGE
-                    new Size(mAbsoluteFaceSize, mAbsoluteFaceSize), new Size());
-        }*/
-        /**
-         * 検出された場所に矩形を描写
-         */
-        /*
-        Rect[] facesArray2 = faces2.toArray();
-        for (int i = 0; i < facesArray2.length; i++) {
-            Core.rectangle(mRgba, facesArray2[i].tl(), facesArray2[i].br(), BLUE, 3);
-        }
-*/
-        /**
-         * 検出された物体のフラグを立てる
-         *//*
-        if (facesArray.length > 0) flag[0] = 1;
-        else flag[0] = 0;
-        if (facesArray2.length > 0) flag[1] = 1;
-        else flag[1] = 0;
-
-        Log.i(TAG, "testflag" + flag[0] + " " + flag[1] + mAbsoluteFaceSize);*/
         return mRgba;
     }
 
@@ -305,16 +268,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                      */
 
                     // カスケード型分類器読み込み
-                    int resNum = 0;
-                    int i = 0;
                     Field[] fields = R.raw.class.getFields();
-                    for (Field field : fields) {
-                        if (field.getName().equals("$change")) {
-                            continue;
-                        }
-                        resNum++;
-                    }
-                    mCascade = new Cascade[resNum];
                     for (Field field : fields) {
                         try {
                             if (field.getName().equals("$change")) {
@@ -345,12 +299,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                                 Log.e(TAG, "Failed to load mCascade classifier");
                                 mJavaDetector = null;
                             } else {
-                                mCascade[i] = new Cascade(resName, mJavaDetector, bm, title, text);
-                                i++;
+                                mCascades.add(new Cascade(resName, mJavaDetector, bm, title, text));
                                 Log.i(TAG, "Loaded mCascade classifier from " + mCascadeFile.getAbsolutePath());
                             }
                             mCascadeDir.delete();
-
                         } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                         } catch (FileNotFoundException e) {

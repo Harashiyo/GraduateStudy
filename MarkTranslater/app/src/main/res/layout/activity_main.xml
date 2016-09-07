@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:id="@+id/camera_view"
             opencv:camera_id="any"
-            opencv:show_fps="true"/>
+            opencv:show_fps="false"/>
 
         <Button
             android:layout_width="wrap_content"

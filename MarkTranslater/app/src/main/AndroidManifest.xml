@@ -32,9 +32,11 @@
         <!-- 縦画面固定 -->
         <activity
             android:name=".TranslateActivity"
-            android:label="@string/title_activity_translate"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:screenOrientation="portrait"></activity>
+        <!-- 縦画面固定 -->
+        <activity
+            android:name=".SelectActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
