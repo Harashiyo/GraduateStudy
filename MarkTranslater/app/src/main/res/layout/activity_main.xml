@@ -12,37 +12,32 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true">
-        <org.opencv.android.JavaCameraView
+        <com.example.haraoka.marktranslater.ZoomCameraView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/camera_view"
             opencv:camera_id="any"
-            opencv:show_fps="false"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_translate"
-            android:id="@+id/button_translate"
-            android:layout_gravity="center_horizontal|bottom" />
+            opencv:show_fps="false" />
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="right|bottom">
+            android:gravity="center_vertical|bottom"
+            android:layout_gravity="bottom">
+
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/main_seek" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+"
-                android:id="@+id/button_puls" />
+                android:text="@string/button_translate"
+                android:id="@+id/main_button_translate"
+                android:layout_gravity="center_horizontal" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="-"
-                android:id="@+id/button_minus" />
         </LinearLayout>
     </FrameLayout>
 </RelativeLayout>

@@ -14,22 +14,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
@@ -39,7 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +42,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener {
 
     private static final String TAG = "MT::MainActivity";
-    private CameraBridgeViewBase mCameraView;
+    private ZoomCameraView mCameraView;
 
     private Mat mRgba;
     private Mat mGray;
@@ -71,10 +66,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //レイアウト読み込み
         setContentView(R.layout.activity_main);
-        preferences = getSharedPreferences("SaveData", Context.MODE_PRIVATE);
+        //preferences = getSharedPreferences("SaveData", Context.MODE_PRIVATE);
         mCascades = new ArrayList<>();
         // ボタンの設定
-        Button buttonTranslate = (Button) findViewById(R.id.button_translate);
+        Button buttonTranslate = (Button) findViewById(R.id.main_button_translate);
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 }
             }
         });
+        /*
         Button buttonPlus = (Button) findViewById(R.id.button_puls);
         buttonPlus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,16 +161,15 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 return false;
             }
         });
-
+*/
         // カメラビューの設定
-        mCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
+        mCameraView = (ZoomCameraView) findViewById(R.id.camera_view);
+        mCameraView.setZoomControl((SeekBar) findViewById(R.id.main_seek));
         mCameraView.setCvCameraViewListener(this);
         //リストmCascadesへの追加処理はonResume以降に実行される
         //そのためonResumeが実行されるごとにリストへの追加処理が実行されてしまう
         //同じマークのオブジェクトが複数追加されるのを防ぐためのフラグ
         mFirstAccessFlag = true;
-
-        
     }
 
     @Override
@@ -200,12 +195,15 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         if (mCameraView != null) {
             mCameraView.disableView();
         }
+        /*
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt("TOP_LEFT_X", (int) mTopLeft.x);
         editor.putInt("TOP_LEFT_Y", (int) mTopLeft.y);
         editor.putInt("BOTTOM_RIGHT_X", (int) mBottomRight.x);
         editor.putInt("BOTTOM_RIGHT_Y", (int) mBottomRight.y);
         editor.apply();
+        */
+
         super.onPause();
     }
 
@@ -226,8 +224,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
          * rows(行): height, cols(列): width
          */
         mScreenSize = new Point(width, height);
+        /*
         mTopLeft = new Point( preferences.getInt("TOP_LEFT_X",width / 4), preferences.getInt("TOP_LEFT_Y",height / 2 - width / 4));
         mBottomRight = new Point(preferences.getInt("BOTTOM_RIGHT_X",width * 3 / 4), preferences.getInt("BOTTOM_RIGHT_Y", height / 2 + width / 4));
+        */
+        mTopLeft = new Point( width / 4, height / 2 - width / 4);
+        mBottomRight = new Point(width * 3 / 4, height / 2 + width / 4);
         mGray = new Mat(height, width, CvType.CV_8UC3);
         mRgba = new Mat(height, width, CvType.CV_8UC3);
     }
@@ -329,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     };
 
+    /*
     private Runnable repeatPlus = new Runnable(){
         @Override
         public void run(){
@@ -382,5 +385,5 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 mPointThread=null;
             }
         }
-    };
+    };*/
 }
