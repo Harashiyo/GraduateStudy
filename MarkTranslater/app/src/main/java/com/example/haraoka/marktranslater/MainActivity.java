@@ -48,8 +48,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private static final String TAG = "MT::MainActivity";
     private CameraBridgeViewBase mCameraView;
-    private static final Scalar RED = new Scalar(255, 0, 0, 255);
-    private static final Scalar BLUE = new Scalar(0, 0, 255, 255);
+
     private Mat mRgba;
     private Mat mGray;
 
@@ -57,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private boolean mRepeatFlag = false;
     private List<Cascade> mCascades;
 
+    private boolean mFirstAccessFlag;
 
     private SharedPreferences preferences;
     private Point mTopLeft;
@@ -169,8 +169,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         // カメラビューの設定
         mCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
         mCameraView.setCvCameraViewListener(this);
+        //リストmCascadesへの追加処理はonResume以降に実行される
+        //そのためonResumeが実行されるごとにリストへの追加処理が実行されてしまう
+        //同じマークのオブジェクトが複数追加されるのを防ぐためのフラグ
+        mFirstAccessFlag = true;
 
-
+        
     }
 
     @Override
@@ -242,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         //mGrayにグレースケールを格納
         Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
         //mRgbaに矩形を描画
-        Core.rectangle(mRgba, mTopLeft, mBottomRight, RED, 3);
+        Core.rectangle(mRgba, mTopLeft, mBottomRight, new Scalar(236, 185, 53), 2);
 
         return mRgba;
     }
@@ -266,51 +270,53 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                      * ここでは関係アンドロイドバグ：code.google.com/p/android/issues/detail?id=204714 - $changeフィールドは、おそらくそれが今生成することができる問題のほとんどを解決することになる、Androidのスタジオ2.1の一過性になります。
                      * URL:http://stackoverflow.com/questions/36549129/android-java-objmodelclass-getclass-getdeclaredfields-returns-change-as-o
                      */
-
-                    // カスケード型分類器読み込み
-                    Field[] fields = R.raw.class.getFields();
-                    for (Field field : fields) {
-                        try {
-                            if (field.getName().equals("$change")) {
-                                continue;
+                    if(mFirstAccessFlag == true) {
+                        // カスケード型分類器読み込み
+                        Field[] fields = R.raw.class.getFields();
+                        for (Field field : fields) {
+                            try {
+                                if (field.getName().equals("$change")) {
+                                    continue;
+                                }
+                                String resName = field.getName();
+                                int resId = getResources().getIdentifier(resName, "raw", getPackageName());
+                                InputStream is = getResources().openRawResource(resId);
+                                File mCascadeDir = getDir("mCascade", Context.MODE_PRIVATE);
+                                File mCascadeFile = new File(mCascadeDir, resName + ".xml");
+                                FileOutputStream os = new FileOutputStream(mCascadeFile);
+                                byte[] buffer = new byte[4096];
+                                int bytesRead;
+                                while ((bytesRead = is.read(buffer)) != -1) {
+                                    os.write(buffer, 0, bytesRead);
+                                }
+                                is.close();
+                                os.close();
+                                CascadeClassifier mJavaDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
+                                is = getResources().getAssets().open(resName + ".png");
+                                Bitmap bm = BitmapFactory.decodeStream(is);
+                                is.close();
+                                resId = getResources().getIdentifier("title_" + resName, "string", getPackageName());
+                                String title = getResources().getString(resId);
+                                resId = getResources().getIdentifier("text_" + resName, "string", getPackageName());
+                                String text = getResources().getString(resId);
+                                if (mJavaDetector.empty()) {
+                                    Log.e(TAG, "Failed to load mCascade classifier");
+                                    mJavaDetector = null;
+                                } else {
+                                    mCascades.add(new Cascade(resName, mJavaDetector, bm, title, text));
+                                    Log.i(TAG, "Loaded mCascade classifier from " + mCascadeFile.getAbsolutePath());
+                                }
+                                mCascadeDir.delete();
+                            } catch (IllegalArgumentException e) {
+                                e.printStackTrace();
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "Failed to load mCascade. Exception thrown: " + e);
                             }
-                            String resName = field.getName();
-                            int resId = getResources().getIdentifier(resName, "raw", getPackageName());
-                            InputStream is = getResources().openRawResource(resId);
-                            File mCascadeDir = getDir("mCascade", Context.MODE_PRIVATE);
-                            File mCascadeFile = new File(mCascadeDir, resName + ".xml");
-                            FileOutputStream os = new FileOutputStream(mCascadeFile);
-                            byte[] buffer = new byte[4096];
-                            int bytesRead;
-                            while ((bytesRead = is.read(buffer)) != -1) {
-                                os.write(buffer, 0, bytesRead);
-                            }
-                            is.close();
-                            os.close();
-                            CascadeClassifier mJavaDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
-                            is = getResources().getAssets().open(resName + ".png");
-                            Bitmap bm = BitmapFactory.decodeStream(is);
-                            is.close();
-                            resId = getResources().getIdentifier("title_" + resName, "string", getPackageName());
-                            String title = getResources().getString(resId);
-                            resId = getResources().getIdentifier("text_" + resName, "string", getPackageName());
-                            String text = getResources().getString(resId);
-                            if (mJavaDetector.empty()) {
-                                Log.e(TAG, "Failed to load mCascade classifier");
-                                mJavaDetector = null;
-                            } else {
-                                mCascades.add(new Cascade(resName, mJavaDetector, bm, title, text));
-                                Log.i(TAG, "Loaded mCascade classifier from " + mCascadeFile.getAbsolutePath());
-                            }
-                            mCascadeDir.delete();
-                        } catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Log.e(TAG, "Failed to load mCascade. Exception thrown: " + e);
                         }
+                        mFirstAccessFlag = false;
                     }
                     mCameraView.enableView();
                 }

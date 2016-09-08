@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Rect;
@@ -35,15 +36,27 @@ public class Cascade implements Serializable {
         mResult = false;
     }
 
+    /**
+     * マークと背景の輝度が逆転している場合も想定し，
+     * 入力画像とネガポジ反転させた入力画像の２種類に対して物体検出を行う
+     *
+     * @param gray グレースケール化された入力画像（Mat型）
+     *             この画像に対し物体検出を行う
+     */
     public void detectMarks(Mat gray){
-        MatOfRect marks = new MatOfRect();
+        Mat negMat = new Mat();
+        Core.bitwise_not(gray, negMat);
+        MatOfRect marks1 = new MatOfRect();
+        MatOfRect marks2 = new MatOfRect();
         if (mCascadeClassifier != null) {
-            mCascadeClassifier.detectMultiScale(gray, marks, 1.1, 2, 2, new Size(0,0), new Size());
+            mCascadeClassifier.detectMultiScale(gray, marks1, 1.1, 2, 2, new Size(0,0), new Size());
+            mCascadeClassifier.detectMultiScale(negMat, marks2, 1.1, 2, 2, new Size(0,0), new Size());
         }else{
             Log.i(TAG, "CascadeClassifier is null");
         }
-        Rect[] marksArray = marks.toArray();
-        if(marksArray.length > 0){
+        Rect[] marksArray1 = marks1.toArray();
+        Rect[] marksArray2 = marks2.toArray();
+        if(marksArray1.length > 0 || marksArray2.length > 0){
             Log.i(TAG, getResName() + " is detected.");
             mResult = true;
         }else {
