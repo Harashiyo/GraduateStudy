@@ -321,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                         mFirstAccessFlag = false;
                     }
                     mCameraView.enableView();
+                    mCameraView.setSeekValue(0);
                 }
                 break;
                 default: {

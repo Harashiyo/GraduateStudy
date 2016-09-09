@@ -26,10 +26,33 @@
             android:gravity="center_vertical|bottom"
             android:layout_gravity="bottom">
 
-            <SeekBar
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/main_seek" />
+                android:layout_height="match_parent"
+                android:weightSum="1">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/main_image_minus"
+                    android:src="@drawable/minus"
+                    android:layout_weight="0.03" />
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:id="@+id/main_seek"
+                    android:thumb="@drawable/thumb_inset"
+                    android:layout_weight="0.94" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/main_image_plus"
+                    android:src="@drawable/plus"
+                    android:layout_weight="0.03" />
+            </LinearLayout>
 
             <Button
                 android:layout_width="wrap_content"

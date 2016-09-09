@@ -26,6 +26,10 @@ public class ZoomCameraView extends JavaCameraView {
         super(context, attrs);
     }
 
+    public double getProgressValue(){
+        return progressValue;
+    }
+
     public void setZoomControl(SeekBar seekBar) {
         mSeekBar=seekBar;
     }
@@ -90,23 +94,27 @@ public class ZoomCameraView extends JavaCameraView {
                 });
     }
 
-
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return mScaleDetector.onTouchEvent(event);
     }
 
+    @Override
     protected boolean initializeCamera(int width, int height) {
 
         boolean ret = super.initializeCamera(width, height);
 
-        Camera.Parameters params = mCamera.getParameters();
+        try {
+            Camera.Parameters params = mCamera.getParameters();
 
-        if(params.isZoomSupported())
-            enableZoomControls(params);
+            if(params.isZoomSupported())
+                enableZoomControls(params);
 
-        mCamera.setParameters(params);
+            mCamera.setParameters(params);
+        }catch (Exception e){
+
+        }
+
 
         return ret;
     }
