@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background"
+        android:drawable="@drawable/abc_scrubber_track_mtrl_alpha" />
+    <!-- 背景画像 -->
+
+    <item android:id="@android:id/secondaryProgress" >
+        <scale android:scaleWidth="100%"
+            android:drawable="@drawable/abc_scrubber_track_mtrl_alpha" />
+    </item>
+
+    <item android:id="@android:id/progress" >
+        <scale android:scaleWidth="100%"
+            android:drawable="@drawable/abc_scrubber_track_mtrl_alpha" />
+    </item>
+    <!-- シーク中の画像 -->
+</layer-list>

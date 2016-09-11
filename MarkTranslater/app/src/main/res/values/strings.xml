@@ -7,4 +7,17 @@
     <string name="title_jas20">ＪＡＳマーク</string>
     <string name="text_jas20">品位・成分・性能など、品質についての一般JAS規格を満たす食品や林産物につけるマーク。品質によって「特級」「上級」「標準」の等級を示すことができるものもある。</string>
     <string name="title_activity_select">SelectActivity</string>
+
+    <string name="title_alumi2">アルミニウム</string>
+    <string name="text_alumi2">アルミ缶のリサイクルを進めるために付けられたマークです。回収されたアルミ缶は、アルミ缶やアルミサッシなど再生地金をつくるために利用されています。</string>
+    <string name="title_jas202">ＪＡＳマーク</string>
+    <string name="text_jas202">品位・成分・性能など、品質についての一般JAS規格を満たす食品や林産物につけるマーク。品質によって「特級」「上級」「標準」の等級を示すことができるものもある。</string>
+    <string name="title_alumi3">アルミニウム</string>
+    <string name="text_alumi3">アルミ缶のリサイクルを進めるために付けられたマークです。回収されたアルミ缶は、アルミ缶やアルミサッシなど再生地金をつくるために利用されています。</string>
+    <string name="title_jas203">ＪＡＳマーク</string>
+    <string name="text_jas203">品位・成分・性能など、品質についての一般JAS規格を満たす食品や林産物につけるマーク。品質によって「特級」「上級」「標準」の等級を示すことができるものもある。</string>
+    <string name="title_alumi4">アルミニウム</string>
+    <string name="text_alumi4">アルミ缶のリサイクルを進めるために付けられたマークです。回収されたアルミ缶は、アルミ缶やアルミサッシなど再生地金をつくるために利用されています。</string>
+    <string name="title_jas204">ＪＡＳマーク</string>
+    <string name="text_jas204">品位・成分・性能など、品質についての一般JAS規格を満たす食品や林産物につけるマーク。品質によって「特級」「上級」「標準」の等級を示すことができるものもある。</string>
 </resources>

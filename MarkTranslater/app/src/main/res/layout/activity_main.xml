@@ -32,26 +32,46 @@
                 android:layout_height="match_parent"
                 android:weightSum="1">
 
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:id="@+id/main_image_minus"
-                    android:src="@drawable/minus"
-                    android:layout_weight="0.03" />
-
-                <SeekBar
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:id="@+id/main_seek"
-                    android:thumb="@drawable/thumb_inset"
-                    android:layout_weight="0.94" />
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.03">
 
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:id="@+id/main_image_plus"
-                    android:src="@drawable/plus"
-                    android:layout_weight="0.03" />
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:id="@+id/main_image_minus"
+                        android:src="@drawable/layer_minus"
+                        android:layout_centerInParent="true" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.94">
+
+                    <SeekBar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/main_seek"
+                        android:thumb="@drawable/selector_thumb"
+                        android:layout_centerInParent="true"
+                        android:progressDrawable="@drawable/layer_progress"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.03">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:id="@+id/main_image_plus"
+                        android:src="@drawable/layer_plus"
+                        android:layout_centerInParent="true" />
+                </RelativeLayout>
+
             </LinearLayout>
 
             <Button

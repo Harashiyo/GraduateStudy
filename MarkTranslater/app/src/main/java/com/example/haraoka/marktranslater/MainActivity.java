@@ -312,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                             } catch (IllegalArgumentException e) {
                                 e.printStackTrace();
                             } catch (FileNotFoundException e) {
+                                Log.e(TAG, "File not found : " + e);
                                 e.printStackTrace();
                             } catch (IOException e) {
                                 e.printStackTrace();
