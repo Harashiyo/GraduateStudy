@@ -49,7 +49,7 @@ public class Cascade implements Serializable {
         MatOfRect marks1 = new MatOfRect();
         MatOfRect marks2 = new MatOfRect();
         if (mCascadeClassifier != null) {
-            mCascadeClassifier.detectMultiScale(gray, marks1, 1.1, 2, 2, new Size(0,0), new Size());
+            mCascadeClassifier.detectMultiScale(gray, marks1, 1.1, 2, 2, new Size((int)gray.width()/2,(int)gray.height()/2), new Size());
             mCascadeClassifier.detectMultiScale(negMat, marks2, 1.1, 2, 2, new Size(0,0), new Size());
         }else{
             Log.i(TAG, "CascadeClassifier is null");
@@ -62,6 +62,7 @@ public class Cascade implements Serializable {
         }else {
             mResult = false;
         }
+        //negMat.release();
     }
 
     public boolean getResult(){

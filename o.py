@@ -11,7 +11,9 @@ def getCascadeName(num): #カスケードファイル名
 
 files = os.listdir("C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\maru")
 files.remove("Thumbs.db")
-for j in range(1,7):
+startNum = 1
+endNum = 6
+for j in range(startNum,endNum):
 	cascade = cv2.CascadeClassifier(getCascadeName(j))
 	print("maru cascade"+ str(j).zfill(2))
 	for i in range(len(files)):
@@ -41,7 +43,7 @@ for j in range(1,7):
 		print(str(count/20)+"%")
 
 files = os.listdir("C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\maru2")
-for j in range(1,7):
+for j in range(startNum,endNum):
 	cascade = cv2.CascadeClassifier(getCascadeName(j))
 	print("maru2 cascade"+ str(j).zfill(2))
 	for i in range(len(files)):
@@ -71,7 +73,7 @@ for j in range(1,7):
 		print(str(count/20)+"%")
 
 files = os.listdir("C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\sankaku")
-for j in range(1,7):
+for j in range(startNum,endNum):
 	cascade = cv2.CascadeClassifier(getCascadeName(j))
 	print("sankaku cascade"+ str(j).zfill(2))
 	for i in range(len(files)):
@@ -101,7 +103,7 @@ for j in range(1,7):
 		print(str(count/20)+"%")
 
 files = os.listdir("C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\sankaku2")
-for j in range(1,7):
+for j in range(startNum,endNum):
 	cascade = cv2.CascadeClassifier(getCascadeName(j))
 	print("sankaku2 cascade"+ str(j).zfill(2))
 	for i in range(len(files)):
@@ -131,7 +133,7 @@ for j in range(1,7):
 		print(str(count/20)+"%")
 
 files = os.listdir("C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\shikaku")
-for j in range(1,7):
+for j in range(startNum,endNum):
 	cascade = cv2.CascadeClassifier(getCascadeName(j))
 	print("shikaku cascade"+ str(j).zfill(2))
 	for i in range(len(files)):
@@ -161,7 +163,7 @@ for j in range(1,7):
 		print(str(count/20)+"%")
 
 files = os.listdir("C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\shikaku2")
-for j in range(1,7):
+for j in range(startNum,endNum):
 	cascade = cv2.CascadeClassifier(getCascadeName(j))
 	print("shikaku2 cascade"+ str(j).zfill(2))
 	for i in range(len(files)):
@@ -192,7 +194,7 @@ for j in range(1,7):
 
 files = os.listdir("C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\sonota")
 files.remove("Thumbs.db")
-for j in range(1,7):
+for j in range(startNum,endNum):
 	cascade = cv2.CascadeClassifier(getCascadeName(j))
 	print("sonota cascade"+ str(j).zfill(2))
 	for i in range(len(files)):

@@ -3,12 +3,12 @@ import cv2
 import numpy as np
 
 def getFileName(num): #入ファイル名
-	return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\tokuho2\\" + str(num).zfill(4)+".png"
+	return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\tokuho\\" + str(num).zfill(4)+".png"
 
 def getCascadeName(num): #カスケードファイル名
 	return "C:\\Users\\Shohei\\Documents\\sotsuken\\cas\\testCascade\\cascade" + str(num).zfill(2) + ".xml"
 
-for j in range(1,7):
+for j in range(1,6):
 	count=0
 	cascade = cv2.CascadeClassifier(getCascadeName(j))
 	for i in range(2000):
@@ -27,7 +27,7 @@ for j in range(1,7):
 		if len(facerect) > 0:
 			flag = 0
 			for rect in facerect:
-				if rect[0:2][0] < w and rect[0:2][1] < h and rect[2:4][0] > ww and rect[2:4][1] > hh :
+				#if rect[0:2][0] < w and rect[0:2][1] < h and rect[2:4][0] > ww and rect[2:4][1] > hh :
 					flag = 1
 					cv2.rectangle(img, tuple(rect[0:2]),tuple(rect[0:2]+rect[2:4]),125, thickness=2)
 			if flag == 1:

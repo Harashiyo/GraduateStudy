@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 mGray.submat((int)mTopLeft.y,(int)mBottomRight.y,(int)mTopLeft.x,(int)mBottomRight.x).copyTo(mat);
                 for(int i = 0; i < mCascades.size();i++){
                     mCascades.get(i).detectMarks(mat);
-                    System.out.println(mCascades.get(i).getResName());
-                    System.out.println(mCascades.get(i).getResult());
+                    //System.out.println(mCascades.get(i).getResName());
+                    //System.out.println(mCascades.get(i).getResult());
                 }
                 List<Cascade> detectedMarks = new ArrayList<>();
                 for(int i = 0; i < mCascades.size(); i++){
