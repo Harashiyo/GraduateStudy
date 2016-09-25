@@ -47,13 +47,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private Mat mRgba;
     private Mat mGray;
 
-    private Thread mPointThread;
-    private boolean mRepeatFlag = false;
     private List<Cascade> mCascades;
 
     private boolean mFirstAccessFlag;
 
-    private SharedPreferences preferences;
     private Point mTopLeft;
     private Point mBottomRight;
     private Point mScreenSize;
@@ -75,18 +72,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             public void onClick(View view) {
                 Mat mat = new Mat((int) (mBottomRight.y-mTopLeft.y), (int)(mBottomRight.x-mTopLeft.x), CvType.CV_8UC3);
                 mGray.submat((int)mTopLeft.y,(int)mBottomRight.y,(int)mTopLeft.x,(int)mBottomRight.x).copyTo(mat);
-                for(int i = 0; i < mCascades.size();i++){
-                    mCascades.get(i).detectMarks(mat);
-                    //System.out.println(mCascades.get(i).getResName());
-                    //System.out.println(mCascades.get(i).getResult());
-                }
                 List<Cascade> detectedMarks = new ArrayList<>();
-                for(int i = 0; i < mCascades.size(); i++){
-                    if(mCascades.get(i).getResult()==true){
+                for(int i = 0; i < mCascades.size();i++){
+                    if(mCascades.get(i).detectMarks(mat) == true){
                         detectedMarks.add(mCascades.get(i));
                     }
                 }
-
                 if(detectedMarks.size() == 1){
                     Intent intent = new Intent(getApplication(), TranslateActivity.class);
                     intent.putExtra("DETECTED_MARK", detectedMarks.get(0));
@@ -100,68 +91,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 }
             }
         });
-        /*
-        Button buttonPlus = (Button) findViewById(R.id.button_puls);
-        buttonPlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mScreenSize.x > mBottomRight.x){
-                    mTopLeft.x--;
-                    mTopLeft.y--;
-                    mBottomRight.x++;
-                    mBottomRight.y++;
-                }
-            }
-        });
-        buttonPlus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    mRepeatFlag = false;
-                }
-                return false;
-            }
-        });
-        buttonPlus.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                mRepeatFlag = true;
-                mPointThread = new Thread(repeatPlus);
-                mPointThread.start();
-                return false;
-            }
-        });
-        Button buttonMinus = (Button) findViewById(R.id.button_minus);
-        buttonMinus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mBottomRight.x - mTopLeft.x > 90) {
-                    mTopLeft.x++;
-                    mTopLeft.y++;
-                    mBottomRight.x--;
-                    mBottomRight.y--;
-                }
-            }
-        });
-        buttonPlus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    mRepeatFlag = false;
-                }
-                return false;
-            }
-        });
-        buttonMinus.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                mRepeatFlag = true;
-                mPointThread = new Thread(repeatMinus);
-                mPointThread.start();
-                return false;
-            }
-        });
-*/
+
         // カメラビューの設定
         mCameraView = (ZoomCameraView) findViewById(R.id.camera_view);
         mCameraView.setZoomControl((SeekBar) findViewById(R.id.main_seek));
@@ -195,14 +125,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         if (mCameraView != null) {
             mCameraView.disableView();
         }
-        /*
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("TOP_LEFT_X", (int) mTopLeft.x);
-        editor.putInt("TOP_LEFT_Y", (int) mTopLeft.y);
-        editor.putInt("BOTTOM_RIGHT_X", (int) mBottomRight.x);
-        editor.putInt("BOTTOM_RIGHT_Y", (int) mBottomRight.y);
-        editor.apply();
-        */
 
         super.onPause();
     }
@@ -224,12 +146,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
          * rows(行): height, cols(列): width
          */
         mScreenSize = new Point(width, height);
-        /*
-        mTopLeft = new Point( preferences.getInt("TOP_LEFT_X",width / 4), preferences.getInt("TOP_LEFT_Y",height / 2 - width / 4));
-        mBottomRight = new Point(preferences.getInt("BOTTOM_RIGHT_X",width * 3 / 4), preferences.getInt("BOTTOM_RIGHT_Y", height / 2 + width / 4));
-        */
-        mTopLeft = new Point( width / 4, height / 2 - width / 4);
-        mBottomRight = new Point(width * 3 / 4, height / 2 + width / 4);
+
+        mTopLeft = new Point( width / 10 * 3, height / 2 - width / 10 * 2 );
+        mBottomRight = new Point(width * 7 / 10, height / 2 + width / 10 * 2 );
         mGray = new Mat(height, width, CvType.CV_8UC3);
         mRgba = new Mat(height, width, CvType.CV_8UC3);
     }
@@ -332,60 +251,4 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
         }
     };
-
-    /*
-    private Runnable repeatPlus = new Runnable(){
-        @Override
-        public void run(){
-            while(mRepeatFlag){
-                try{
-                    Thread.sleep(30);
-                }catch(InterruptedException e){
-                }
-                handler.post(new Runnable(){
-                    @Override
-                    public void run(){
-                        if (mScreenSize.x > mBottomRight.x) {
-                            mTopLeft.x--;
-                            mTopLeft.y--;
-                            mBottomRight.x++;
-                            mBottomRight.y++;
-                        }
-                    }
-                });
-            }
-        }
-    };
-
-    private Runnable repeatMinus = new Runnable(){
-        @Override
-        public void run(){
-            while(mRepeatFlag){
-                try{
-                    Thread.sleep(30);
-                }catch(InterruptedException e){
-                }
-                handler.post(new Runnable(){
-                    @Override
-                    public void run(){
-                        if (mBottomRight.x - mTopLeft.x > 90) {
-                            mTopLeft.x++;
-                            mTopLeft.y++;
-                            mBottomRight.x--;
-                            mBottomRight.y--;
-                        }
-                    }
-                });
-            }
-        }
-    };
-
-    private Handler handler = new Handler(){
-        public void handleMessage(Message msg){
-            if(mPointThread != null){
-                mPointThread.stop();
-                mPointThread=null;
-            }
-        }
-    };*/
 }

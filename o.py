@@ -12,7 +12,7 @@ def getCascadeName(num): #カスケードファイル名
 files = os.listdir("C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\maru")
 files.remove("Thumbs.db")
 startNum = 1
-endNum = 6
+endNum = 5
 for j in range(startNum,endNum):
 	cascade = cv2.CascadeClassifier(getCascadeName(j))
 	print("maru cascade"+ str(j).zfill(2))

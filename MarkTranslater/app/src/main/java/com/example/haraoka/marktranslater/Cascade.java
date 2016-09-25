@@ -25,7 +25,6 @@ public class Cascade implements Serializable {
     private String mResName;
     private String mTitle;
     private String mText;
-    private boolean mResult;
 
     public Cascade(String name, CascadeClassifier cc, Bitmap bmp, String title, String text){
         mResName = name;
@@ -33,7 +32,6 @@ public class Cascade implements Serializable {
         serializeBitmap(bmp);
         mTitle = title;
         mText = text;
-        mResult = false;
     }
 
     /**
@@ -43,14 +41,14 @@ public class Cascade implements Serializable {
      * @param gray グレースケール化された入力画像（Mat型）
      *             この画像に対し物体検出を行う
      */
-    public void detectMarks(Mat gray){
+    public boolean detectMarks(Mat gray){
         Mat negMat = new Mat();
         Core.bitwise_not(gray, negMat);
         MatOfRect marks1 = new MatOfRect();
         MatOfRect marks2 = new MatOfRect();
         if (mCascadeClassifier != null) {
-            mCascadeClassifier.detectMultiScale(gray, marks1, 1.1, 2, 2, new Size((int)gray.width()/2,(int)gray.height()/2), new Size());
-            mCascadeClassifier.detectMultiScale(negMat, marks2, 1.1, 2, 2, new Size(0,0), new Size());
+            mCascadeClassifier.detectMultiScale(gray, marks1, 1.1, 2, 2, new Size(gray.width()/2,gray.height()/2), new Size());
+            mCascadeClassifier.detectMultiScale(negMat, marks2, 1.1, 2, 2, new Size(gray.width()/2,gray.height()/2), new Size());
         }else{
             Log.i(TAG, "CascadeClassifier is null");
         }
@@ -58,15 +56,10 @@ public class Cascade implements Serializable {
         Rect[] marksArray2 = marks2.toArray();
         if(marksArray1.length > 0 || marksArray2.length > 0){
             Log.i(TAG, getResName() + " is detected.");
-            mResult = true;
-        }else {
-            mResult = false;
+            return true;
         }
-        //negMat.release();
-    }
 
-    public boolean getResult(){
-        return mResult;
+        return false;
     }
 
     private void serializeBitmap(Bitmap bmp) {

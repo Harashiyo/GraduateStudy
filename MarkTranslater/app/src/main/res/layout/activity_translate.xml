@@ -3,35 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:opencv="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:paddingTop="30dp"
     tools:context="com.example.haraoka.marktranslater.TranslateActivity">
 
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="top|center_horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/tra_text_title"
-            android:layout_gravity="center_horizontal" />
+            android:id="@+id/tra_text_title" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
             android:id="@+id/tra_image_mark"
-            android:layout_gravity="center_horizontal" />
+            android:adjustViewBounds="false"
+            android:scaleType="fitCenter" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text=""
-            android:id="@+id/tra_text_translation"
-            android:layout_gravity="center_horizontal" />
+            android:id="@+id/tra_text_translation" />
 
     </LinearLayout>
 </RelativeLayout>
