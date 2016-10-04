@@ -55,8 +55,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private Point mBottomRight;
     private Point mScreenSize;
 
-    private boolean matAccessFlag=true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //アクティビティの最初に呼ばれる
@@ -73,10 +71,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             @Override
             public void onClick(View view) {
                 Mat mat = new Mat((int) (mBottomRight.y-mTopLeft.y), (int)(mBottomRight.x-mTopLeft.x), CvType.CV_8UC3);
-                while(matAccessFlag==false);
-                matAccessFlag=false;
                 mGray.submat((int)mTopLeft.y,(int)mBottomRight.y,(int)mTopLeft.x,(int)mBottomRight.x).copyTo(mat);
-                matAccessFlag=true;
                 List<Cascade> detectedMarks = new ArrayList<>();
                 for(int i = 0; i < mCascades.size();i++){
                     if(mCascades.get(i).detectMarks(mat) == true){
@@ -169,13 +164,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public Mat onCameraFrame(Mat inputFrame) {
         //mRgbaにinputFrameをコピー
         inputFrame.copyTo(mRgba);
-        if(matAccessFlag==true){
-            matAccessFlag=false;
-            //mGrayにグレースケールを格納
-            Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
-            matAccessFlag=true;
-        }
-
+        //mGrayにグレースケールを格納
+        Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
         //mRgbaに矩形を描画
         Core.rectangle(mRgba, mTopLeft, mBottomRight, new Scalar(236, 185, 53), 2);
 

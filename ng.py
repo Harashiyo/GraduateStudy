@@ -29,7 +29,7 @@ def getFilePass(d,name,num): #出力ファイル名
 
 target="tokuho"
 f = open("C:\\Users\\Shohei\\Documents\\sotsuken\\NG.txt","w")
-for j in range(2045,2075):
+for j in range(2041,2071):
 	for h in range(7):
 		files = os.listdir(getMarkDir(h))
 		if "Thumbs.db" in files: files.remove("Thumbs.db")
