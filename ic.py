@@ -59,7 +59,7 @@ def normarization(coordinate, size): #正規化
 	return np.dot(coordinate, m)
 
 def getFileName(num): #出力ファイル名
-	return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\tokuho2\\" + str(num).zfill(4)+".png"
+	return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\maru\\tokuho\\" + str(num).zfill(4)+".png"
 
 
 

@@ -17,13 +17,13 @@ import android.util.Log;
 
 class AsyncServiceHelper
 {
+    /**
+     AndroidのOpenCVが実機で落ちる
+     参考:http://d.hatena.ne.jp/seinzumtode/20150508/1431057402
+     */
     public static boolean initOpenCV(String Version, final Context AppContext,
             final LoaderCallbackInterface Callback)
     {
-        /**
-         AndroidのOpenCVが実機で落ちる
-         参考:http://d.hatena.ne.jp/seinzumtode/20150508/1431057402
-         */
         AsyncServiceHelper helper = new AsyncServiceHelper(Version, AppContext, Callback);
         Intent intent = new Intent("org.opencv.engine.BIND");
         intent.setPackage("org.opencv.engine");
