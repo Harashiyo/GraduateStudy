@@ -23,8 +23,8 @@ def getMarkDir(num):
 		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\shikaku2"
 
 
-startNum = 1
-endNum = 7
+startNum = 3
+endNum = 4
 for k in range(7):
 	files = os.listdir(getMarkDir(k))
 	if "Thumbs.db" in files: files.remove("Thumbs.db")
@@ -35,29 +35,26 @@ for k in range(7):
 			print(files[i])
 			count=0
 			result=0
-			for x in range(15):
-				for y in range(15):
-					for z in range(15):
-						if x>2 and y>2 and z>2:
-							img = cv2.imread(getMarkDir(k)+"\\"+files[i]+"\\"+str(count).zfill(4)+".png",cv2.IMREAD_GRAYSCALE)
-							minW = int(img.shape[1]/2)
-							minH = int(img.shape[0]/2)
-							w = img.shape[1]/3
-							h = img.shape[0]/3
-							ww = img.shape[1]*2/3
-							hh = img.shape[0]*2/3
-							facerect = cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=1, minSize=(minW,minH))
-							if len(facerect) > 0:
-								flag = 0
-								for rect in facerect:
-									#if rect[0:2][0] < w and rect[0:2][1] < h and rect[2:4][0] > ww and rect[2:4][1] > hh :
-										flag = 1
-										#cv2.rectangle(img, tuple(rect[0:2]),tuple(rect[0:2]+rect[2:4]),125, thickness=2)
-								if flag == 1:
-									result += 1 
-							"""
-							cv2.imshow("detected.jpg", img)
-							cv2.waitKey(0)
-							"""
-							count+=1
-			print(str(result/count*100)+"%")
+			for n in range(2197):
+				img = cv2.imread(getMarkDir(k)+"\\"+files[i]+"\\"+str(count).zfill(4)+".png",cv2.IMREAD_GRAYSCALE)
+				minW = int(img.shape[1]/2)
+				minH = int(img.shape[0]/2)
+				w = img.shape[1]/3
+				h = img.shape[0]/3
+				ww = int(img.shape[1]*2/3)
+				hh = int(img.shape[0]*2/3)
+				facerect = cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=1, minSize=(ww,hh))
+				if len(facerect) > 0:
+					flag = 0
+					for rect in facerect:
+						#if rect[0:2][0] < w and rect[0:2][1] < h and rect[2:4][0] > ww and rect[2:4][1] > hh :
+							flag = 1
+							#cv2.rectangle(img, tuple(rect[0:2]),tuple(rect[0:2]+rect[2:4]),125, thickness=2)
+					if flag == 1:
+						result += 1 
+				"""
+				cv2.imshow("detected.jpg", img)
+				cv2.waitKey(0)
+				"""
+				count+=1							
+			print(str(result/count*100))

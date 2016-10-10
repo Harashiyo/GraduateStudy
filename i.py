@@ -75,6 +75,7 @@ def getImageDir(num):
 		return "C:\\Users\\Shohei\\Documents\\sotsuken\\image\\shikaku2"
 
 def getMarkDir(num):
+	"""
 	if num ==0 :
 		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\sonota\\"
 	elif num == 1 :
@@ -89,6 +90,21 @@ def getMarkDir(num):
 		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\shikaku\\"
 	elif num == 6 :
 		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\shikaku2\\"
+	"""
+	if num ==0 :
+		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\sonota\\"
+	elif num == 1 :
+		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\maru\\"
+	elif num == 2 :
+		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\maru2\\"
+	elif num == 3 :
+		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\sankaku\\"
+	elif num == 4 :
+		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\sankaku2\\"
+	elif num == 5 :
+		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\shikaku\\"
+	elif num == 6 :
+		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\shikaku2\\"
 		
 
 def getFileName(num): #出力ファイル名
@@ -96,6 +112,31 @@ def getFileName(num): #出力ファイル名
 
 def getFilePass(d,name,num): #出力ファイル名
 	return  getMarkDir(d)+ name + "\\" + getFileName(num)
+
+def getSign(num):
+	if num == 0:
+		return 1
+	return -1
+
+
+lists = []
+maxDeg=1
+#while maxDeg <= 9:
+while maxDeg <= 17:
+	for x in range(maxDeg):
+		for y in range(maxDeg):
+			for z in range(maxDeg):
+				if x < (maxDeg-1) and y < (maxDeg-1) and z < (maxDeg-1):
+					continue
+				list = []
+				for xx in range(2):
+					for yy in range(2):
+						for zz in range(2):
+							coordinate=[getSign(xx)*x,getSign(yy)*y,getSign(zz)*z]
+							if (coordinate in list)==False:
+								list.append(coordinate)
+								lists.append(coordinate)
+	maxDeg+=1
 
 for h in range(7):
 	files = os.listdir(getImageDir(h))
@@ -112,130 +153,65 @@ for h in range(7):
 			print(files[i] + " is already exists")
 		f = open(getMarkDir(h)+"\\"+files[i].rstrip(".png")+"\\"+"pos.txt","w")
 		cnt=0
-		for x in range(17):
-			for y in range(17):
-				for z in range(17):
-					
-					'''
-						画像の回転
-					'''
-					theta = np.array([getRad(x*2-16),getRad(y*2-16),getRad(z*2-16)])
-					m = getMatCompositeTransformation(theta, size)
-					leftTop = np.dot([0, 0, 0, 1], m)
-					leftBottom = np.dot([0, size[1], 0, 1], m)
-					rightBottom = np.dot([size[0], size[1], 0, 1], m)
-					rightTop = np.dot([size[0], 0, 0, 1], m)
-					
-					leftTop = normarization(leftTop, size)
-					leftBottom = normarization(leftBottom, size)
-					rightBottom = normarization(rightBottom, size)
-					rightTop = normarization(rightTop, size)
+		for list in lists:
+			#theta = np.array([getRad(list[0]*2),getRad(list[1]*2),getRad(list[2]*2)])
+			theta = np.array([getRad(list[0]),getRad(list[1]),getRad(list[2])])
+			m = getMatCompositeTransformation(theta, size)
+			leftTop = np.dot([0, 0, 0, 1], m)
+			leftBottom = np.dot([0, size[1], 0, 1], m)
+			rightBottom = np.dot([size[0], size[1], 0, 1], m)
+			rightTop = np.dot([size[0], 0, 0, 1], m)
+			
+			leftTop = normarization(leftTop, size)
+			leftBottom = normarization(leftBottom, size)
+			rightBottom = normarization(rightBottom, size)
+			rightTop = normarization(rightTop, size)
 
-					p2 = np.float32([[leftTop[0,0], leftTop[0,1]],[leftBottom[0,0], leftBottom[0,1]],
-						[rightBottom[0,0], rightBottom[0,1]],[rightTop[0,0],rightTop[0,1]]])
-					M=cv2.getPerspectiveTransform(p1,p2)
-					dst = cv2.warpPerspective(img,M,(0,0),cv2.INTER_LINEAR,cv2.BORDER_CONSTANT,1)
-					leftTopY=0
-					rightBottomY=0
-					flag1=False
-					flag2=False
-					for j in range(size[1]):
-						for k in range(size[0]):
-							if dst[j, k] < 230 and flag1==False:
-								leftTopY=j
-								flag1=True
-							if dst[size[1]-j-1, k] < 230 and flag2 == False:
-								rightBottomY=size[1]-j-1
-								flag2=True
-							if flag1==True and flag2==True :
-								break
-						if flag1==True and flag2==True :
-							break
-					leftTopX=0
-					rightBottomX=0
-					flag1=False
-					flag2=False
-					for k in range(size[0]):
-						for j in range(size[1]):
-							if dst[j, k] < 230 and flag1==False:
-								leftTopX=k
-								flag1=True
-							if dst[j, size[0]-k-1] < 230 and flag2==False:
-								rightBottomX=size[0]-k-1
-								flag2=True
-							if flag1==True and flag2==True :
-								break
-						if flag1==True and flag2==True :
-							break
-					f.write(getFileName(cnt)+" 1 "+str(leftTopX)+" "+str(leftTopY)+" "+str(rightBottomX-leftTopX)+" "+str(rightBottomY-leftTopY)+"\n")
-					cv2.imwrite(getFilePass(h,files[i].rstrip(".png"),cnt),dst)
-					cnt=cnt+1
-		# pass num 
-		flag = False
-		for x in range(17):
-			for y in range(17):
-				for z in range(17):		
-					'''
-						画像の回転
-					'''
-					theta = np.array([getRad(x-8),getRad(y-8),getRad(z-8)])
-					m = getMatCompositeTransformation(theta, size)
-					leftTop = np.dot([0, 0, 0, 1], m)
-					leftBottom = np.dot([0, size[1], 0, 1], m)
-					rightBottom = np.dot([size[0], size[1], 0, 1], m)
-					rightTop = np.dot([size[0], 0, 0, 1], m)
-					
-					leftTop = normarization(leftTop, size)
-					leftBottom = normarization(leftBottom, size)
-					rightBottom = normarization(rightBottom, size)
-					rightTop = normarization(rightTop, size)
-
-					p2 = np.float32([[leftTop[0,0], leftTop[0,1]],[leftBottom[0,0], leftBottom[0,1]],
-						[rightBottom[0,0], rightBottom[0,1]],[rightTop[0,0],rightTop[0,1]]])
-					M=cv2.getPerspectiveTransform(p1,p2)
-					dst = cv2.warpPerspective(img,M,(0,0),cv2.INTER_LINEAR,cv2.BORDER_CONSTANT,1)
-					leftTopY=0
-					rightBottomY=0
-					flag1=False
-					flag2=False
-					for j in range(size[1]):
-						for k in range(size[0]):
-							if dst[j, k] < 230 and flag1==False:
-								leftTopY=j
-								flag1=True
-							if dst[size[1]-j-1, k] < 230 and flag2==False:
-								rightBottomY=size[1]-j-1
-								flag2=True
-							if flag1==True and flag2==True :
-								break
-						if flag1==True and flag2==True :
-							break
-					leftTopX=0
-					rightBottomX=0
-					flag1=False
-					flag2=False
-					for k in range(size[0]):
-						for j in range(size[1]):
-							if dst[j, k] < 230 and flag1==False:
-								leftTopX=k
-								flag1=True
-							if dst[j, size[0]-k-1] < 230 and flag2==False:
-								rightBottomX=size[0]-k-1
-								flag2=True
-							if flag1==True and flag2==True :
-								break
-						if flag1==True and flag2==True :
-							break
-					f.write(getFileName(cnt)+" 1 "+str(leftTopX)+" "+str(leftTopY)+" "+str(rightBottomX-leftTopX)+" "+str(rightBottomY-leftTopY)+"\n")
-					cv2.imwrite(getFilePass(h,files[i].rstrip(".png"),cnt),dst)
-					cnt=cnt+1
-					if cnt >= 5000 :
-						flag = True
+			p2 = np.float32([[leftTop[0,0], leftTop[0,1]],[leftBottom[0,0], leftBottom[0,1]],
+				[rightBottom[0,0], rightBottom[0,1]],[rightTop[0,0],rightTop[0,1]]])
+			M=cv2.getPerspectiveTransform(p1,p2)
+			dst = cv2.warpPerspective(img,M,(0,0),cv2.INTER_LINEAR,cv2.BORDER_CONSTANT,1)
+			leftTopY=0
+			rightBottomY=0
+			flag1=False
+			flag2=False
+			for j in range(size[1]):
+				for k in range(size[0]):
+					if dst[j, k] < 230 and flag1==False:
+						leftTopY=j
+						flag1=True
+					if dst[size[1]-j-1, k] < 230 and flag2 == False:
+						rightBottomY=size[1]-j-1
+						flag2=True
+					if flag1==True and flag2==True :
 						break
-				if flag:
+				if flag1==True and flag2==True :
 					break
-			if flag:
-				break
+			leftTopX=0
+			rightBottomX=0
+			flag1=False
+			flag2=False
+			for k in range(size[0]):
+				for j in range(size[1]):
+					if dst[j, k] < 230 and flag1==False:
+						leftTopX=k
+						flag1=True
+					if dst[j, size[0]-k-1] < 230 and flag2==False:
+						rightBottomX=size[0]-k-1
+						flag2=True
+					if flag1==True and flag2==True :
+						break
+				if flag1==True and flag2==True :
+					break
+			width=rightBottomX-leftTopX
+			height=rightBottomY-leftTopY
+			if width > height:
+				leftTopY-=int((width-height)/2)
+				height=width
+			elif width < height:
+				leftTopX-=int((height-width)/2)
+				width=height
+			f.write(getFileName(cnt)+" 1 "+str(leftTopX)+" "+str(leftTopY)+" "+str(width)+" "+str(height)+"\n")
+			cv2.imwrite(getFilePass(h,files[i].rstrip(".png"),cnt),dst)
+			cnt=cnt+1
 		f.close()
-
-
