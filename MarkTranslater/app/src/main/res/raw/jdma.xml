@@ -3,8 +3,8 @@
 <cascade>
   <stageType>BOOST</stageType>
   <featureType>HAAR</featureType>
-  <height>80</height>
-  <width>90</width>
+  <height>35</height>
+  <width>35</width>
   <stageParams>
     <boostType>GAB</boostType>
     <minHitRate>9.9500000476837158e-001</minHitRate>
@@ -21,19 +21,19 @@
     <!-- stage 0 -->
     <_>
       <maxWeakCount>1</maxWeakCount>
-      <stageThreshold>1.</stageThreshold>
+      <stageThreshold>9.9916929006576538e-001</stageThreshold>
       <weakClassifiers>
         <_>
           <internalNodes>
-            0 -1 0 -1.0804121196269989e-001</internalNodes>
+            0 -1 0 -2.3223774135112762e-001</internalNodes>
           <leafValues>
-            1. -1.</leafValues></_></weakClassifiers></_></stages>
+            9.9916929006576538e-001 -1.</leafValues></_></weakClassifiers></_></stages>
   <features>
     <_>
       <rects>
         <_>
-          19 32 42 16 -1.</_>
+          12 8 13 18 -1.</_>
         <_>
-          33 32 14 16 3.</_></rects>
+          12 14 13 6 3.</_></rects>
       <tilted>0</tilted></_></features></cascade>
 </opencv_storage>

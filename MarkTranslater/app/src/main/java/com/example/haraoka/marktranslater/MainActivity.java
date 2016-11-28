@@ -200,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                                     continue;
                                 }
                                 String resName = field.getName();
+                                //Log.d(TAG,resName);
                                 int resId = getResources().getIdentifier(resName, "raw", getPackageName());
                                 InputStream is = getResources().openRawResource(resId);
                                 File mCascadeDir = getDir("mCascade", Context.MODE_PRIVATE);
