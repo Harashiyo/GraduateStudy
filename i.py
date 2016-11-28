@@ -92,19 +92,19 @@ def getMarkDir(num):
 		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\shikaku2\\"
 	"""
 	if num ==0 :
-		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\sonota\\"
+		return "C:\\Users\\Shohei\\Desktop\\CreateSample\\mark2\\sonota\\"
 	elif num == 1 :
-		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\maru\\"
+		return "C:\\Users\\Shohei\\Desktop\\CreateSample\\mark2\\maru\\"
 	elif num == 2 :
-		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\maru2\\"
+		return "C:\\Users\\Shohei\\Desktop\\CreateSample\\mark2\\maru2\\"
 	elif num == 3 :
-		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\sankaku\\"
+		return "C:\\Users\\Shohei\\Desktop\\CreateSample\\mark2\\sankaku\\"
 	elif num == 4 :
-		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\sankaku2\\"
+		return "C:\\Users\\Shohei\\Desktop\\CreateSample\\mark2\\sankaku2\\"
 	elif num == 5 :
-		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\shikaku\\"
+		return "C:\\Users\\Shohei\\Desktop\\CreateSample\\mark2\\shikaku\\"
 	elif num == 6 :
-		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark2\\shikaku2\\"
+		return "C:\\Users\\Shohei\\Desktop\\CreateSample\\mark2\\shikaku2\\"
 		
 
 def getFileName(num): #出力ファイル名
@@ -122,7 +122,7 @@ def getSign(num):
 lists = []
 maxDeg=1
 #while maxDeg <= 9:
-while maxDeg <= 17:
+while maxDeg <= 5:
 	for x in range(maxDeg):
 		for y in range(maxDeg):
 			for z in range(maxDeg):
@@ -155,7 +155,7 @@ for h in range(7):
 		cnt=0
 		for list in lists:
 			#theta = np.array([getRad(list[0]*2),getRad(list[1]*2),getRad(list[2]*2)])
-			theta = np.array([getRad(list[0]),getRad(list[1]),getRad(list[2])])
+			theta = np.array([getRad(list[0]*4),getRad(list[1]*4),getRad(list[2]*4)])
 			m = getMatCompositeTransformation(theta, size)
 			leftTop = np.dot([0, 0, 0, 1], m)
 			leftBottom = np.dot([0, size[1], 0, 1], m)

@@ -23,12 +23,12 @@ def getMarkDir(num):
 		return "C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\shikaku2"
 
 
-startNum = 3
-endNum = 4
+startNum = 59
+endNum = 61
 for k in range(7):
 	files = os.listdir(getMarkDir(k))
 	if "Thumbs.db" in files: files.remove("Thumbs.db")
-	for j in range(startNum,endNum):
+	for j in range(startNum,endNum+1):
 		cascade = cv2.CascadeClassifier(getCascadeName(j))
 		print(getMarkDir(k).replace("C:\\Users\\Shohei\\Documents\\sotsuken\\mark\\","")+" cascade"+ str(j).zfill(2))
 		for i in range(len(files)):
@@ -44,6 +44,7 @@ for k in range(7):
 				ww = int(img.shape[1]*2/3)
 				hh = int(img.shape[0]*2/3)
 				facerect = cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=1, minSize=(ww,hh))
+				#facerect = cascade.detectMultiScale(img, scaleFactor=1.1, minNeighbors=1, minSize=(0,0))
 				if len(facerect) > 0:
 					flag = 0
 					for rect in facerect:

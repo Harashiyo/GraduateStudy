@@ -27,9 +27,9 @@ def getFileName(num): #出力ファイル名
 def getFilePass(d,name,num): #出力ファイル名
 	return  getMarkDir(d)+ name + "\\" + getFileName(num)
 
-target="tokuteijas"
+target="fare"
 f = open("C:\\Users\\Shohei\\Documents\\sotsuken\\NG.txt","w")
-for j in range(25):
+for j in range(30):
 	for h in range(7):
 		files = os.listdir(getMarkDir(h))
 		if "Thumbs.db" in files: files.remove("Thumbs.db")
