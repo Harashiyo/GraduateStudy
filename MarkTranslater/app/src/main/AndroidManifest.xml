@@ -32,11 +32,13 @@
         <!-- 縦画面固定 -->
         <activity
             android:name=".TranslateActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopupOverlay"></activity>
         <!-- 縦画面固定 -->
         <activity
             android:name=".SelectActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopupOverlay"></activity>
     </application>
 
 </manifest>

@@ -191,12 +191,14 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                      * ここでは関係アンドロイドバグ：code.google.com/p/android/issues/detail?id=204714 - $changeフィールドは、おそらくそれが今生成することができる問題のほとんどを解決することになる、Androidのスタジオ2.1の一過性になります。
                      * URL:http://stackoverflow.com/questions/36549129/android-java-objmodelclass-getclass-getdeclaredfields-returns-change-as-o
                      */
+
                     if(mFirstAccessFlag == true) {
+
                         // カスケード型分類器読み込み
                         Field[] fields = R.raw.class.getFields();
                         for (Field field : fields) {
                             try {
-                                if (field.getName().equals("$change")) {
+                                if (field.getName().equals("$change")||field.getName().equals("serialVersionUID")) {
                                     continue;
                                 }
                                 String resName = field.getName();
@@ -238,7 +240,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                                 e.printStackTrace();
                                 Log.e(TAG, "Failed to load mCascade. Exception thrown: " + e);
                             }
-                        }
+                            }
+
+
                         mFirstAccessFlag = false;
                     }
                     mCameraView.enableView();
