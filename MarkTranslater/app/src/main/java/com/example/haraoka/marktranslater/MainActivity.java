@@ -197,6 +197,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                         // カスケード型分類器読み込み
                         Field[] fields = R.raw.class.getFields();
                         for (Field field : fields) {
+                            System.out.println(field.getName());
+                        }
+                        for (Field field : fields) {
                             try {
                                 if (field.getName().equals("$change")||field.getName().equals("serialVersionUID")) {
                                     continue;
