@@ -26,6 +26,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
@@ -71,10 +72,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             @Override
             public void onClick(View view) {
                 Mat mat = new Mat((int) (mBottomRight.y-mTopLeft.y), (int)(mBottomRight.x-mTopLeft.x), CvType.CV_8UC3);
+                Mat dst = new Mat(90,90, CvType.CV_8UC3);
                 mGray.submat((int)mTopLeft.y,(int)mBottomRight.y,(int)mTopLeft.x,(int)mBottomRight.x).copyTo(mat);
+                Imgproc.resize(mat, dst, new Size(90, 90));
                 List<Cascade> detectedMarks = new ArrayList<>();
                 for(int i = 0; i < mCascades.size();i++){
-                    if(mCascades.get(i).detectMarks(mat) == true){
+                    if(mCascades.get(i).detectMarks(dst) == true){
                         detectedMarks.add(mCascades.get(i));
                     }
                 }
