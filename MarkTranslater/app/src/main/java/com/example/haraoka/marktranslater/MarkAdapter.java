@@ -25,8 +25,8 @@ public class MarkAdapter extends BaseAdapter {
         }
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
-        mNames = new String[names.length];
-        mBitmaps = new Bitmap[getCount()];
+        mBitmaps = new Bitmap[bitmaps.length];
+        mNames = new String[getCount()];
         for(int i=0; i < getCount(); i++){
             mNames[i] = names[i];
             mBitmaps[i] = bitmaps[i];
@@ -40,7 +40,7 @@ public class MarkAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mNames.length;
+        return mBitmaps.length;
     }
 
     @Override

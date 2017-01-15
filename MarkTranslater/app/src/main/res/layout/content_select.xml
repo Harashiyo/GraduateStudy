@@ -10,7 +10,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.haraoka.marktranslater.SelectActivity"
-    tools:showIn="@layout/activity_select">
+    tools:showIn="@layout/activity_select"
+    android:background="@android:color/white">
 
     <GridView
         android:id="@+id/gridView"
