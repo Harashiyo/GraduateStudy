@@ -29,7 +29,8 @@ public class SelectActivity extends AppCompatActivity {
         String[] names = new String[cascades.size()];
         for(int i = 0; i < cascades.size(); i++){
             bitmaps[i] = cascades.get(i).getBitmap();
-            names[i] = cascades.get(i).getResName();
+            //names[i] = cascades.get(i).getResName();
+            names[i] = "";
         }
         gridView.setAdapter(new MarkAdapter(this, bitmaps, names));
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
