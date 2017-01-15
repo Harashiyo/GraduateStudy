@@ -67,10 +67,16 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         //preferences = getSharedPreferences("SaveData", Context.MODE_PRIVATE);
         mCascades = new ArrayList<>();
         // ボタンの設定
-        Button buttonTranslate = (Button) findViewById(R.id.main_button_translate);
+        final Button buttonTranslate = (Button) findViewById(R.id.main_button_translate);
         buttonTranslate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                buttonTranslate.setEnabled(false);
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        buttonTranslate.setEnabled(true);
+                    }
+                }, 500);
                 Mat mat = new Mat((int) (mBottomRight.y-mTopLeft.y), (int)(mBottomRight.x-mTopLeft.x), CvType.CV_8UC3);
                 Mat dst = new Mat(90,90, CvType.CV_8UC3);
                 mGray.submat((int)mTopLeft.y,(int)mBottomRight.y,(int)mTopLeft.x,(int)mBottomRight.x).copyTo(mat);
@@ -90,7 +96,40 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                     intent.putExtra("DETECTED_MARKS", (Serializable) detectedMarks);
                     startActivity(intent);
                 }else{
-                    Toast.makeText(MainActivity.this, "検出されませんでした", Toast.LENGTH_LONG).show();
+                    Mat dst2 = new Mat(90,90, CvType.CV_8UC3);
+                    Imgproc.threshold(dst, dst2, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+                    for(int i = 0; i < mCascades.size();i++){
+                        if(mCascades.get(i).detectMarks(dst2) == true){
+                            detectedMarks.add(mCascades.get(i));
+                        }
+                    }
+                    if(detectedMarks.size() == 1){
+                        Intent intent = new Intent(getApplication(), TranslateActivity.class);
+                        intent.putExtra("DETECTED_MARK", detectedMarks.get(0));
+                        startActivity(intent);
+                    }else if(detectedMarks.size() > 0){
+                        Intent intent = new Intent(getApplication(), SelectActivity.class);
+                        intent.putExtra("DETECTED_MARKS", (Serializable) detectedMarks);
+                        startActivity(intent);
+                    }else{
+                        Imgproc.adaptiveThreshold(dst, dst2, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 11, 2);
+                        for(int i = 0; i < mCascades.size();i++){
+                            if(mCascades.get(i).detectMarks(dst2) == true){
+                                detectedMarks.add(mCascades.get(i));
+                            }
+                        }
+                        if(detectedMarks.size() == 1){
+                            Intent intent = new Intent(getApplication(), TranslateActivity.class);
+                            intent.putExtra("DETECTED_MARK", detectedMarks.get(0));
+                            startActivity(intent);
+                        }else if(detectedMarks.size() > 0){
+                            Intent intent = new Intent(getApplication(), SelectActivity.class);
+                            intent.putExtra("DETECTED_MARKS", (Serializable) detectedMarks);
+                            startActivity(intent);
+                        }else{
+                            Toast.makeText(MainActivity.this, "検出されませんでした", Toast.LENGTH_LONG).show();
+                        }
+                    }
                 }
             }
         });

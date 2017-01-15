@@ -3,8 +3,8 @@
     <string name="button_translate">Translate</string>
     <string name="title_activity_translate">TranslateActivity</string>
     <string name="title_activity_select">SelectActivity</string>
-    <string name="title_select">Select</string>
-    <string name="title_translate">Translate</string>
+    <string name="title_select">Back</string>
+    <string name="title_translate">Back</string>
 
     <string name="title_alumi">Aluminum Can Identification Mark for Beverages</string>
     <string name="text_alumi">This mark is an identification mark for promoting sorting collection and recycling of aluminum beverage cans. Labeling on aluminum cans is mandatory according to the Law for Promotion of Effective Utilization of Resources. Beer and carbonated drinks, juice, tea, coffee, canned drinking water etc.</string>
