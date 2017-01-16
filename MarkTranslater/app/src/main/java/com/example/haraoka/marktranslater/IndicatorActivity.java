@@ -89,15 +89,18 @@ public class IndicatorActivity extends AppCompatActivity implements ViewPager.On
     }
 
     private void next() {
-        if (viewPager.getCurrentItem() != viewSparseArray.size()) {
+        if (viewPager.getCurrentItem() == viewSparseArray.size()-1) {
+            finish();
+        } else {
             viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
         }
     }
 
     private void back() {
         if (viewPager.getCurrentItem() == 0) {
-            return;
+            viewPager.setCurrentItem(viewSparseArray.size(), true);
+        } else {
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
         }
-        viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
     }
 }

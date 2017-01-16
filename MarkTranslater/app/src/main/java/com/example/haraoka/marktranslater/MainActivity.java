@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.AppLaunchChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -64,6 +65,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //レイアウト読み込み
         setContentView(R.layout.activity_main);
+        //初回起動判定
+        if(!AppLaunchChecker.hasStartedFromLauncher(this)){
+            Intent intent = new Intent(getApplication(), IndicatorActivity.class);
+            startActivity(intent);
+        }
+        AppLaunchChecker.onActivityCreate(this);
         //preferences = getSharedPreferences("SaveData", Context.MODE_PRIVATE);
         mCascades = new ArrayList<>();
         // ボタンの設定
@@ -131,6 +138,15 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                         }
                     }
                 }
+            }
+        });
+        final Button buttonInfo = (Button) findViewById(R.id.main_button_info);
+        buttonInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getApplication(), IndicatorActivity.class);
+                startActivity(intent);
             }
         });
 

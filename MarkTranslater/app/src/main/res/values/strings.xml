@@ -7,10 +7,10 @@
     <string name="title_translate">Back</string>
 
     <!-- indicator -->
-    <string name="footer_skip">skip</string>
+    <string name="footer_skip">Skip</string>
     <string name="footer_go">Go!</string>
-    <string name="footer_back">back</string>
-    <string name="footer_next">next</string>
+    <string name="footer_back">Back</string>
+    <string name="footer_next">Next</string>
 
     <!-- translate -->
     <string name="title_alumi">Aluminum Can Identification Mark for Beverages</string>
