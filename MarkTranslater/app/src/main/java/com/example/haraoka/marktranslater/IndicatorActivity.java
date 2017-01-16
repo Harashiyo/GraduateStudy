@@ -1,5 +1,6 @@
 package com.example.haraoka.marktranslater;
 
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -35,11 +36,14 @@ public class IndicatorActivity extends AppCompatActivity implements ViewPager.On
     }
 
     private SparseArray<Fragment> makeFragments() {
-        viewSparseArray.put(0, IndicatorFragment.newInstance("zero"));
-        viewSparseArray.put(1, IndicatorFragment.newInstance("one"));
-        viewSparseArray.put(2, IndicatorFragment.newInstance("two"));
-        viewSparseArray.put(3, IndicatorFragment.newInstance("three"));
-        viewSparseArray.put(4, IndicatorFragment.newInstance("four"));
+
+        // Resources#getDrawable で
+        // 指定した画像のDrawableインスタンスを取得
+        viewSparseArray.put(0, IndicatorFragment.newInstance(0));
+        viewSparseArray.put(1, IndicatorFragment.newInstance(1));
+        viewSparseArray.put(2, IndicatorFragment.newInstance(2));
+        viewSparseArray.put(3, IndicatorFragment.newInstance(3));
+        viewSparseArray.put(4, IndicatorFragment.newInstance(4));
         return viewSparseArray;
     }
 
