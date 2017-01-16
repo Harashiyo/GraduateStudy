@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MarkTranslater</string>
+    <string name="app_name">MarkTranslator</string>
     <string name="button_translate">Translate</string>
     <string name="title_activity_translate">TranslateActivity</string>
     <string name="title_activity_select">SelectActivity</string>

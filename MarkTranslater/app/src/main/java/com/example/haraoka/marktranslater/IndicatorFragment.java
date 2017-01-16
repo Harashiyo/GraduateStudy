@@ -49,7 +49,7 @@ public class IndicatorFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_indicator_layout, container, false);
         ((ImageView)view.findViewById(R.id.frag_imageView)).setImageBitmap(getBitmap(mNum));
-        view.setBackgroundColor(Color.rgb((int)(Math.random() * 255), (int)(Math.random() * 255), (int)(Math.random() * 255)));
+        view.setBackgroundColor(getColor(mNum));
         return view;
     }
 
@@ -103,6 +103,29 @@ public class IndicatorFragment extends Fragment {
                 break;
         }
         return bitmap;
+    }
+
+    public int getColor(int num){
+        int color = 0;
+        switch (num) {
+            case 0:
+                color = Color.rgb(236, 185, 53);
+                break;
+            case 1:
+                //color = Color.rgb(255, 160, 0);
+                break;
+            case 2:
+                //color = Color.rgb(240, 98, 146);
+                break;
+            case 3:
+                //color = Color.rgb(79, 195, 247);
+                break;
+            case 4:
+                //color = Color.rgb(102, 187, 106);
+                break;
+        }
+        color = Color.rgb(236, 185, 53);
+        return color;
     }
 
 }
