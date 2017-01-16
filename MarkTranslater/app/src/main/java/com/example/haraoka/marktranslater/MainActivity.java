@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         //そのためonResumeが実行されるごとにリストへの追加処理が実行されてしまう
         //同じマークのオブジェクトが複数追加されるのを防ぐためのフラグ
         mFirstAccessFlag = true;
+
     }
 
     @Override
