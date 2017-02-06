@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -44,6 +46,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener {
 
     private static final String TAG = "MT::MainActivity";
+    public static final int CASCADE_SIZE = 90;
+
     private ZoomCameraView mCameraView;
 
     private Mat mRgba;
@@ -72,6 +76,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
         AppLaunchChecker.onActivityCreate(this);
         //preferences = getSharedPreferences("SaveData", Context.MODE_PRIVATE);
+
+        final ImageView imageView1 = (ImageView) findViewById(R.id.imageView1);
+        final ImageView imageView2 = (ImageView) findViewById(R.id.imageView2);
+        final ImageView imageView3 = (ImageView) findViewById(R.id.imageView3);
+
+
         mCascades = new ArrayList<>();
         // ボタンの設定
         final Button buttonTranslate = (Button) findViewById(R.id.main_button_translate);
@@ -84,13 +94,42 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                         buttonTranslate.setEnabled(true);
                     }
                 }, 500);
+
+                Bitmap bmp1 = Bitmap.createBitmap(CASCADE_SIZE, CASCADE_SIZE, Bitmap.Config.ARGB_8888);
+                Bitmap bmp2 = Bitmap.createBitmap(CASCADE_SIZE, CASCADE_SIZE, Bitmap.Config.ARGB_8888);
+                Bitmap bmp3 = Bitmap.createBitmap(CASCADE_SIZE, CASCADE_SIZE, Bitmap.Config.ARGB_8888);
+
                 Mat mat = new Mat((int) (mBottomRight.y-mTopLeft.y), (int)(mBottomRight.x-mTopLeft.x), CvType.CV_8UC3);
-                Mat dst = new Mat(90,90, CvType.CV_8UC3);
+                Mat dst = new Mat(CASCADE_SIZE,CASCADE_SIZE, CvType.CV_8UC3);
                 mGray.submat((int)mTopLeft.y,(int)mBottomRight.y,(int)mTopLeft.x,(int)mBottomRight.x).copyTo(mat);
-                Imgproc.resize(mat, dst, new Size(90, 90));
+                Imgproc.resize(mat, dst, new Size(CASCADE_SIZE, CASCADE_SIZE));
+                Utils.matToBitmap(dst,bmp1);
+                imageView1.setImageBitmap(bmp1);
+
                 List<Cascade> detectedMarks = new ArrayList<>();
                 for(int i = 0; i < mCascades.size();i++){
                     if(mCascades.get(i).detectMarks(dst) == true){
+                        detectedMarks.add(mCascades.get(i));
+                    }
+                }
+                Mat dst2 = new Mat(CASCADE_SIZE,CASCADE_SIZE, CvType.CV_8UC3);
+                Imgproc.threshold(dst, dst2, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+
+                Utils.matToBitmap(dst2, bmp2);
+                imageView2.setImageBitmap(bmp2);
+
+                for(int i = 0; i < mCascades.size();i++){
+                    if(mCascades.get(i).detectMarks(dst2) == true && !detectedMarks.contains(mCascades.get(i))){
+                        detectedMarks.add(mCascades.get(i));
+                    }
+                }
+                Imgproc.adaptiveThreshold(dst, dst2, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 61, 7);
+
+                Utils.matToBitmap(dst2,bmp3);
+                imageView3.setImageBitmap(bmp3);
+
+                for(int i = 0; i < mCascades.size();i++){
+                    if(mCascades.get(i).detectMarks(dst2) == true && !detectedMarks.contains(mCascades.get(i))){
                         detectedMarks.add(mCascades.get(i));
                     }
                 }
@@ -103,40 +142,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                     intent.putExtra("DETECTED_MARKS", (Serializable) detectedMarks);
                     startActivity(intent);
                 }else{
-                    Mat dst2 = new Mat(90,90, CvType.CV_8UC3);
-                    Imgproc.threshold(dst, dst2, 0.0, 255.0, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
-                    for(int i = 0; i < mCascades.size();i++){
-                        if(mCascades.get(i).detectMarks(dst2) == true){
-                            detectedMarks.add(mCascades.get(i));
-                        }
-                    }
-                    if(detectedMarks.size() == 1){
-                        Intent intent = new Intent(getApplication(), TranslateActivity.class);
-                        intent.putExtra("DETECTED_MARK", detectedMarks.get(0));
-                        startActivity(intent);
-                    }else if(detectedMarks.size() > 0){
-                        Intent intent = new Intent(getApplication(), SelectActivity.class);
-                        intent.putExtra("DETECTED_MARKS", (Serializable) detectedMarks);
-                        startActivity(intent);
-                    }else{
-                        Imgproc.adaptiveThreshold(dst, dst2, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 11, 2);
-                        for(int i = 0; i < mCascades.size();i++){
-                            if(mCascades.get(i).detectMarks(dst2) == true){
-                                detectedMarks.add(mCascades.get(i));
-                            }
-                        }
-                        if(detectedMarks.size() == 1){
-                            Intent intent = new Intent(getApplication(), TranslateActivity.class);
-                            intent.putExtra("DETECTED_MARK", detectedMarks.get(0));
-                            startActivity(intent);
-                        }else if(detectedMarks.size() > 0){
-                            Intent intent = new Intent(getApplication(), SelectActivity.class);
-                            intent.putExtra("DETECTED_MARKS", (Serializable) detectedMarks);
-                            startActivity(intent);
-                        }else{
-                            Toast.makeText(MainActivity.this, "検出されませんでした", Toast.LENGTH_LONG).show();
-                        }
-                    }
+                    Toast.makeText(MainActivity.this, "not detected", Toast.LENGTH_LONG).show();
                 }
             }
         });
